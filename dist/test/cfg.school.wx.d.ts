@@ -1,7 +1,7 @@
 declare const _default: {
     corpId: string;
     agents: {
-        agentId: string;
+        agentid: string;
         secret: string;
     }[];
     apps: {};

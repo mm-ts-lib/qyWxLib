@@ -10,21 +10,28 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = __importDefault(require("path"));
 const debug_1 = __importDefault(require("debug"));
 const _d = debug_1.default('@tslib/qyWxLib:' + path_1.default.basename(__filename));
+const lodash_1 = __importDefault(require("lodash"));
 const wx_lib_1 = __importDefault(require("./lib/wx.lib"));
+// 导入Api路由
+require("./router/api");
+const api_1 = __importDefault(require("./api"));
+exports.api = api_1.default;
 class WX {
-    constructor() {
-        /** ******************************   私有变量    ******************************** * */
-        this._wxLib = null;
-    }
+    constructor() { }
     /** ******************************   对外接口    ******************************** * */
     // 根据配置文件生成wx内部函数
     createWx(wxCfg) {
         this._wxLib = new wx_lib_1.default(wxCfg);
     }
     getWxLib() {
-        if (this._wxLib === null)
+        if (lodash_1.default.isUndefined(this._wxLib))
             throw new Error('WxLib Invalid!!');
         return this._wxLib;
+    }
+    getWxMsg() {
+        if (lodash_1.default.isUndefined(this._wxLib))
+            throw new Error('WxLib Invalid!!');
+        return this._wxLib.getWxMsg();
     }
 }
 exports.WX = WX;

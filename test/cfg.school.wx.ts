@@ -8,12 +8,12 @@ export default {
   agents: [
     {
       // 默认配置
-      agentId: '000000',
+      agentid: '000000',
       secret: 'a8BlSXiCZumPnZlAxXaPeqr1llmIH-WI8ZbATFL3aKx6Efd_pp-dXhuirYMko9lz'
     },
     {
       // 通讯录(同步助手)应用
-      agentId: '1000006',
+      agentid: '1000006',
       secret: '69fHMqwEiq1oSRr3BYy0Cp-gkUmWyAGlP7OuTIKojkM'
     }
   ],

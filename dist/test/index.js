@@ -8,21 +8,21 @@ const path_1 = __importDefault(require("path"));
 const _d = debug_1.default('app:' + path_1.default.basename(__filename, '.js'));
 const src_1 = __importDefault(require("../src"));
 const cfg_school_wx_1 = __importDefault(require("./cfg.school.wx"));
+// 初始化数据库服务
+// import { mongo } from './db';
+// // 初始化http服务器
+// import httpServer from './httpServer/httpServer';
 // 异步启动应用服务
 (async () => {
     console.log('================== Test Start');
     src_1.default.createWx(cfg_school_wx_1.default);
+    // 等待数据库成功连接
+    // await mongo.connect();
+    // httpServer.start();
     try {
-        const _postData = {
-            touser: 'mengqi',
-            msgtype: 'text',
-            agentid: '26',
-            text: {
-                content: '211111111' // message + '(' + item.stuName + _time + ')',
-            },
-            safe: 0
-        };
-        const _ret = await src_1.default.getWxLib().sendUserMSG(_postData, _postData.agentid);
+        // const _ret = await wx.getWxMsg().sendText('26', '852369', 'mengqi');
+        // console.log('================== _ret', _ret);
+        const _ret = await src_1.default.getWxLib().getUserInfoById('mengqi', '26');
         console.log('================== _ret', _ret);
     }
     catch (e) {

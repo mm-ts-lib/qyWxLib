@@ -6,12 +6,20 @@ import path from 'path';
 import debug from 'debug';
 const _d = debug('@tslib/qyWxLib:' + path.basename(__filename));
 
+import _ from 'lodash';
 import WxLib from './lib/wx.lib';
+import WxMsg from './lib/wx.msg';
 import { IWX_CFG } from './lib/def';
+
+// 导入Api路由
+import './router/api';
+import api from './api';
+export { api };
 
 export class WX {
   /** ******************************   私有变量    ******************************** * */
-  private _wxLib: WxLib | null = null;
+  private _wxLib?: WxLib;
+
   constructor() {}
   /** ******************************   对外接口    ******************************** * */
   // 根据配置文件生成wx内部函数
@@ -19,8 +27,12 @@ export class WX {
     this._wxLib = new WxLib(wxCfg);
   }
   public getWxLib() {
-    if (this._wxLib === null) throw new Error('WxLib Invalid!!');
+    if (_.isUndefined(this._wxLib)) throw new Error('WxLib Invalid!!');
     return this._wxLib;
+  }
+  public getWxMsg() {
+    if (_.isUndefined(this._wxLib)) throw new Error('WxLib Invalid!!');
+    return this._wxLib.getWxMsg();
   }
   /** ******************************   私有函数    ******************************** * */
 }

@@ -27,15 +27,15 @@ export default class WxToken {
   /**
    * 获取缓存的accessToken
    */
-  public getLocalToken(agentId: string): string {
-    if (_.isString(agentId)) {
-      const _retToken = this._tokens[agentId];
+  public getLocalToken(agentid: string): string {
+    if (_.isString(agentid)) {
+      const _retToken = this._tokens[agentid];
       if (_retToken) {
         return _retToken;
       }
     }
     // 其他返回默认值
-    const _defaultAgentId = this._wxCfg.agents[0].agentId;
+    const _defaultAgentId = this._wxCfg.agents[0].agentid;
     return this._tokens[_defaultAgentId];
   }
   /**
@@ -44,7 +44,11 @@ export default class WxToken {
    * queryParam：请求url上所带参数,{access_token:self.accessToken} => ?access_token=xxx
    * callback：回调函数
    */
-  public async wxApiGet(cmd: string, queryParam: object, agentId: string) {
+  public async wxApiGet(
+    cmd: string,
+    queryParam: object,
+    agentid: string
+  ): Promise<any> {
     let retryTimes = 3;
     return new Promise((resolve, reject) => {
       let _newToken = '';
@@ -57,7 +61,7 @@ export default class WxToken {
               'GET',
               cmd,
               queryParam,
-              agentId,
+              agentid,
               {},
               _newToken
             );
@@ -90,9 +94,9 @@ export default class WxToken {
     cmd: string,
     queryParam: object,
     postData: object,
-    agentId: string,
+    agentid: string,
     postType?: string
-  ) {
+  ): Promise<any> {
     let retryTimes = 3;
     // 组装post请求数据
     let _reqData = { url: '' };
@@ -119,7 +123,7 @@ export default class WxToken {
               'POST',
               cmd,
               queryParam,
-              agentId,
+              agentid,
               _reqData,
               newToken
             );
@@ -146,13 +150,13 @@ export default class WxToken {
   /*
    * 查找当前应用配置信息
    * */
-  private _getCurAgentInfo(agentId: string) {
-    let curAgent: { agentId: string; secret: string } | undefined;
-    if (!_.isString(agentId)) {
+  private _getCurAgentInfo(agentid: string) {
+    let curAgent: { agentid: string; secret: string } | undefined;
+    if (!_.isString(agentid)) {
       curAgent = this._wxCfg.agents[0];
     } else {
       // 先查找当前应用配置信息
-      curAgent = _.find(this._wxCfg.agents, o => o.agentId === agentId);
+      curAgent = _.find(this._wxCfg.agents, o => o.agentid === agentid);
       if (_.isUndefined(curAgent)) {
         curAgent = this._wxCfg.agents[0]; // 默认
       }
@@ -163,7 +167,7 @@ export default class WxToken {
       return {};
     }
     return {
-      agentId,
+      agentid,
       corpId: this._wxCfg.corpId,
       secret: curAgent.secret
     };
@@ -173,12 +177,12 @@ export default class WxToken {
    * 获取不同应用的 accessToken
    * @param cb 成功后的回调函数,原型:function(err,accessToken)
    */
-  private async _getRemoteToken(agentId: string) {
-    const curAgentInfo = this._getCurAgentInfo(agentId);
+  private async _getRemoteToken(agentid: string) {
+    const curAgentInfo = this._getCurAgentInfo(agentid);
 
     return new Promise(async (resolve, reject) => {
       if (_.isEmpty(curAgentInfo)) {
-        reject({ message: `应用ID${agentId}不存在` });
+        reject({ message: `应用ID${agentid}不存在` });
         return;
       }
 
@@ -189,12 +193,12 @@ export default class WxToken {
             corpid: curAgentInfo.corpId,
             corpsecret: curAgentInfo.secret
           },
-          agentId
+          agentid
         );
         _d('WX GET ACCESS:', typeof _wxGetRet, _wxGetRet);
         const _aToken: string = _.get(_wxGetRet, 'access_token');
-        if (_.isString(curAgentInfo.agentId)) {
-          this._tokens[curAgentInfo.agentId] = _aToken;
+        if (_.isString(curAgentInfo.agentid)) {
+          this._tokens[curAgentInfo.agentid] = _aToken;
         }
         resolve(_aToken);
       } catch (e) {
@@ -233,7 +237,7 @@ export default class WxToken {
   /**
    * 解析wx返回结果
    */
-  private async _parseWxRetBody(resBody: object | string, agentId: string) {
+  private async _parseWxRetBody(resBody: object | string, agentid: string) {
     return new Promise(async (resolve, reject) => {
       try {
         // get请求只返回string, post返回json/string
@@ -251,7 +255,7 @@ export default class WxToken {
             {
               // {"errcode":41001,"errmsg":"access_token missing"}
               // 重试获取access_token,然后重新设置accesstoken,重新发起请求
-              const newToken = await this._getRemoteToken(agentId);
+              const newToken = await this._getRemoteToken(agentid);
               resolve({ errcode: 'retry', newToken });
             }
             break;
@@ -272,7 +276,7 @@ export default class WxToken {
     reqType: 'GET' | 'POST',
     cmd: string,
     queryParam: object,
-    agentId: string,
+    agentid: string,
     reqData: object,
     newToken: string
   ) {
@@ -289,7 +293,7 @@ export default class WxToken {
 
         // 当access_token无效时，需要从新赋值，故需要querystring.stringify
         const _resBody = await this._getRequest(reqType, reqData);
-        const _json = await this._parseWxRetBody(_resBody, agentId);
+        const _json = await this._parseWxRetBody(_resBody, agentid);
         resolve(_json);
       } catch (e) {
         reject(e); // 获取accessToken错误 + JSON.parse错误

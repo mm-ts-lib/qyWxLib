@@ -23,15 +23,15 @@ class WxToken {
     /**
      * 获取缓存的accessToken
      */
-    getLocalToken(agentId) {
-        if (lodash_1.default.isString(agentId)) {
-            const _retToken = this._tokens[agentId];
+    getLocalToken(agentid) {
+        if (lodash_1.default.isString(agentid)) {
+            const _retToken = this._tokens[agentid];
             if (_retToken) {
                 return _retToken;
             }
         }
         // 其他返回默认值
-        const _defaultAgentId = this._wxCfg.agents[0].agentId;
+        const _defaultAgentId = this._wxCfg.agents[0].agentid;
         return this._tokens[_defaultAgentId];
     }
     /**
@@ -40,7 +40,7 @@ class WxToken {
      * queryParam：请求url上所带参数,{access_token:self.accessToken} => ?access_token=xxx
      * callback：回调函数
      */
-    async wxApiGet(cmd, queryParam, agentId) {
+    async wxApiGet(cmd, queryParam, agentid) {
         let retryTimes = 3;
         return new Promise((resolve, reject) => {
             let _newToken = '';
@@ -50,7 +50,7 @@ class WxToken {
                         reject({ message: 'Retry to Update AccessToken 3 times' });
                     }
                     else {
-                        const _getRet = await this._wxHttp('GET', cmd, queryParam, agentId, {}, _newToken);
+                        const _getRet = await this._wxHttp('GET', cmd, queryParam, agentid, {}, _newToken);
                         const _errcode = lodash_1.default.get(_getRet, 'errcode');
                         if (_errcode === 'retry') {
                             _newToken = lodash_1.default.get(_getRet, 'newToken');
@@ -77,7 +77,7 @@ class WxToken {
      * postData：post参数
      * callback：回调函数
      */
-    async wxApiPost(cmd, queryParam, postData, agentId, postType) {
+    async wxApiPost(cmd, queryParam, postData, agentid, postType) {
         let retryTimes = 3;
         // 组装post请求数据
         let _reqData = { url: '' };
@@ -102,7 +102,7 @@ class WxToken {
                         reject({ message: 'Retry to Update AccessToken 3 times' });
                     }
                     else {
-                        const _postRet = await this._wxHttp('POST', cmd, queryParam, agentId, _reqData, newToken);
+                        const _postRet = await this._wxHttp('POST', cmd, queryParam, agentid, _reqData, newToken);
                         const _errcode = lodash_1.default.get(_postRet, 'errcode');
                         if (_errcode === 'retry') {
                             newToken = lodash_1.default.get(_postRet, 'newToken');
@@ -126,14 +126,14 @@ class WxToken {
     /*
      * 查找当前应用配置信息
      * */
-    _getCurAgentInfo(agentId) {
+    _getCurAgentInfo(agentid) {
         let curAgent;
-        if (!lodash_1.default.isString(agentId)) {
+        if (!lodash_1.default.isString(agentid)) {
             curAgent = this._wxCfg.agents[0];
         }
         else {
             // 先查找当前应用配置信息
-            curAgent = lodash_1.default.find(this._wxCfg.agents, o => o.agentId === agentId);
+            curAgent = lodash_1.default.find(this._wxCfg.agents, o => o.agentid === agentid);
             if (lodash_1.default.isUndefined(curAgent)) {
                 curAgent = this._wxCfg.agents[0]; // 默认
             }
@@ -143,7 +143,7 @@ class WxToken {
             return {};
         }
         return {
-            agentId,
+            agentid,
             corpId: this._wxCfg.corpId,
             secret: curAgent.secret
         };
@@ -153,22 +153,22 @@ class WxToken {
      * 获取不同应用的 accessToken
      * @param cb 成功后的回调函数,原型:function(err,accessToken)
      */
-    async _getRemoteToken(agentId) {
-        const curAgentInfo = this._getCurAgentInfo(agentId);
+    async _getRemoteToken(agentid) {
+        const curAgentInfo = this._getCurAgentInfo(agentid);
         return new Promise(async (resolve, reject) => {
             if (lodash_1.default.isEmpty(curAgentInfo)) {
-                reject({ message: `应用ID${agentId}不存在` });
+                reject({ message: `应用ID${agentid}不存在` });
                 return;
             }
             try {
                 const _wxGetRet = await this.wxApiGet('gettoken', {
                     corpid: curAgentInfo.corpId,
                     corpsecret: curAgentInfo.secret
-                }, agentId);
+                }, agentid);
                 _d('WX GET ACCESS:', typeof _wxGetRet, _wxGetRet);
                 const _aToken = lodash_1.default.get(_wxGetRet, 'access_token');
-                if (lodash_1.default.isString(curAgentInfo.agentId)) {
-                    this._tokens[curAgentInfo.agentId] = _aToken;
+                if (lodash_1.default.isString(curAgentInfo.agentid)) {
+                    this._tokens[curAgentInfo.agentid] = _aToken;
                 }
                 resolve(_aToken);
             }
@@ -209,7 +209,7 @@ class WxToken {
     /**
      * 解析wx返回结果
      */
-    async _parseWxRetBody(resBody, agentId) {
+    async _parseWxRetBody(resBody, agentid) {
         return new Promise(async (resolve, reject) => {
             try {
                 // get请求只返回string, post返回json/string
@@ -227,7 +227,7 @@ class WxToken {
                         {
                             // {"errcode":41001,"errmsg":"access_token missing"}
                             // 重试获取access_token,然后重新设置accesstoken,重新发起请求
-                            const newToken = await this._getRemoteToken(agentId);
+                            const newToken = await this._getRemoteToken(agentid);
                             resolve({ errcode: 'retry', newToken });
                         }
                         break;
@@ -245,7 +245,7 @@ class WxToken {
     /**
      * WXHTTP
      */
-    async _wxHttp(reqType, cmd, queryParam, agentId, reqData, newToken) {
+    async _wxHttp(reqType, cmd, queryParam, agentid, reqData, newToken) {
         // 成功更新accessToken //注：access_token在queryParam中
         if (!lodash_1.default.isEmpty(newToken)) {
             lodash_1.default.set(queryParam, 'access_token', newToken);
@@ -256,7 +256,7 @@ class WxToken {
                 lodash_1.default.set(reqData, 'url', _newUrl);
                 // 当access_token无效时，需要从新赋值，故需要querystring.stringify
                 const _resBody = await this._getRequest(reqType, reqData);
-                const _json = await this._parseWxRetBody(_resBody, agentId);
+                const _json = await this._parseWxRetBody(_resBody, agentid);
                 resolve(_json);
             }
             catch (e) {
