@@ -1,0 +1,2 @@
+# qyWxLib
+work.wx.lib
