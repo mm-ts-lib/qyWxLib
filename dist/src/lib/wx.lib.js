@@ -58,10 +58,10 @@ class WxLib {
         return this._wxToken.wxApiGet('user/get', { access_token: this._wxToken.getLocalToken(agentid), userid }, agentid);
     }
     /**
-     * 上传图片资源
+     * 上传临时素材
      */
-    async uploadMedia(formData, agentid) {
-        return this._wxToken.wxApiPost('media/upload', { access_token: this._wxToken.getLocalToken(agentid), type: 'image' }, formData, agentid, 'postIMG');
+    async uploadTempSrc(fileStream, agentid, type) {
+        return this._wxToken.wxApiPost('media/upload', { access_token: this._wxToken.getLocalToken(agentid), type }, { media: fileStream }, agentid, 'postIMG');
     }
 }
 exports.default = WxLib;

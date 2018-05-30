@@ -1,5 +1,7 @@
+/// <reference types="node" />
 import WxMsg from './wx.msg';
 import { IWX_CFG, IWX_USER_INFO } from './def';
+import { ReadStream } from 'tty';
 export default class WxLib {
     /** ******************************   私有变量    ******************************** * */
     private _wxCfg;
@@ -19,7 +21,9 @@ export default class WxLib {
      * @param code
      * @param agentid
      */
-    userFromCode(code: string, agentid: string): Promise<any>;
+    userFromCode(code: string, agentid: string): Promise<{
+        UserId: string;
+    }>;
     /**
      * 通过id获取用户信息
      * @param userid
@@ -27,7 +31,12 @@ export default class WxLib {
      */
     getUserInfoById(userid: string, agentid: string): Promise<IWX_USER_INFO>;
     /**
-     * 上传图片资源
+     * 上传临时素材
      */
-    uploadMedia(formData: object, agentid: string): Promise<any>;
+    uploadTempSrc(fileStream: ReadStream, agentid: string, type: 'image' | 'voice' | 'video' | 'file'): Promise<{
+        errcode: number;
+        errmsg: string;
+        type: 'image' | 'voice' | 'video' | 'file';
+        media_id: string;
+    }>;
 }

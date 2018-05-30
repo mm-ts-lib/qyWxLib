@@ -10,6 +10,7 @@ import WxToken from './wx.token';
 import WxMsg from './wx.msg';
 import { IWX_CFG, ILOCAL_TOKENS, IWX_USER_INFO } from './def';
 import url from 'url';
+import { ReadStream } from 'tty';
 
 export default class WxLib {
   /** ******************************   私有变量    ******************************** * */
@@ -49,7 +50,7 @@ export default class WxLib {
    * @param code
    * @param agentid
    */
-  userFromCode(code: string, agentid: string) {
+  userFromCode(code: string, agentid: string): Promise<{ UserId: string }> {
     return this._wxToken.wxApiGet(
       'user/getuserinfo',
       { access_token: this._wxToken.getLocalToken(agentid), code },
@@ -61,7 +62,6 @@ export default class WxLib {
    * @param userid
    * @param agentid
    */
-
   getUserInfoById(userid: string, agentid: string): Promise<IWX_USER_INFO> {
     return this._wxToken.wxApiGet(
       'user/get',
@@ -70,13 +70,22 @@ export default class WxLib {
     );
   }
   /**
-   * 上传图片资源
+   * 上传临时素材
    */
-  public async uploadMedia(formData: object, agentid: string) {
+  public async uploadTempSrc(
+    fileStream: ReadStream,
+    agentid: string,
+    type: 'image' | 'voice' | 'video' | 'file'
+  ): Promise<{
+    errcode: number;
+    errmsg: string;
+    type: 'image' | 'voice' | 'video' | 'file';
+    media_id: string;
+  }> {
     return this._wxToken.wxApiPost(
       'media/upload',
-      { access_token: this._wxToken.getLocalToken(agentid), type: 'image' },
-      formData,
+      { access_token: this._wxToken.getLocalToken(agentid), type },
+      { media: fileStream },
       agentid,
       'postIMG'
     );
