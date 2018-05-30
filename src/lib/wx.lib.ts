@@ -21,27 +21,29 @@ export default class WxLib {
    * 发送用户信息
    */
   public async sendUserMSG(postData: object, agentId: string) {
-    // return this._wxToken.wxApiPost(
-    //   'message/send',
-    //   {
-    //     access_token: this._wxToken.getLocalToken(agentId)
-    //   },
-    //   postData
-    // );
+    return this._wxToken.wxApiPost(
+      'message/send',
+      {
+        access_token: this._wxToken.getLocalToken(agentId)
+      },
+      postData,
+      agentId
+    );
   }
   /**
    * 上传图片资源
    */
   public async uploadMedia(formData: object, agentId: string) {
-    // return this._wxToken.wxApiPost(
-    //   'media/upload',
-    //   {
-    //     access_token: this._wxToken.getLocalToken(agentId),
-    //     type: 'image'
-    //   },
-    //   formData,
-    //   'postIMG'
-    // );
+    return this._wxToken.wxApiPost(
+      'media/upload',
+      {
+        access_token: this._wxToken.getLocalToken(agentId),
+        type: 'image'
+      },
+      formData,
+      agentId,
+      'postIMG'
+    );
   }
   /** ******************************   私有函数    ******************************** * */
 }

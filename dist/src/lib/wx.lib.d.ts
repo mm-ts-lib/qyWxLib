@@ -7,9 +7,9 @@ export default class WxLib {
     /**
      * 发送用户信息
      */
-    sendUserMSG(postData: object, agentId: string): Promise<void>;
+    sendUserMSG(postData: object, agentId: string): Promise<{}>;
     /**
      * 上传图片资源
      */
-    uploadMedia(formData: object, agentId: string): Promise<void>;
+    uploadMedia(formData: object, agentId: string): Promise<{}>;
 }

@@ -20,27 +20,18 @@ class WxLib {
      * 发送用户信息
      */
     async sendUserMSG(postData, agentId) {
-        // return this._wxToken.wxApiPost(
-        //   'message/send',
-        //   {
-        //     access_token: this._wxToken.getLocalToken(agentId)
-        //   },
-        //   postData
-        // );
+        return this._wxToken.wxApiPost('message/send', {
+            access_token: this._wxToken.getLocalToken(agentId)
+        }, postData, agentId);
     }
     /**
      * 上传图片资源
      */
     async uploadMedia(formData, agentId) {
-        // return this._wxToken.wxApiPost(
-        //   'media/upload',
-        //   {
-        //     access_token: this._wxToken.getLocalToken(agentId),
-        //     type: 'image'
-        //   },
-        //   formData,
-        //   'postIMG'
-        // );
+        return this._wxToken.wxApiPost('media/upload', {
+            access_token: this._wxToken.getLocalToken(agentId),
+            type: 'image'
+        }, formData, agentId, 'postIMG');
     }
 }
 exports.default = WxLib;

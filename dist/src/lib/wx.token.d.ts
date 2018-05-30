@@ -23,6 +23,7 @@ export default class WxToken {
      * postData：post参数
      * callback：回调函数
      */
+    wxApiPost(cmd: string, queryParam: object, postData: object, agentId: string, postType?: string): Promise<{}>;
     /** ******************************   私有函数    ******************************** * */
     private _getCurAgentInfo(agentId);
     /**
@@ -31,4 +32,21 @@ export default class WxToken {
      * @param cb 成功后的回调函数,原型:function(err,accessToken)
      */
     private _getRemoteToken(agentId);
+    /** ******************************   WX GET POST    ******************************** * */
+    /**
+     * 解析返回的结果 json/string -> json
+     */
+    private _wxResBody_ToJson(wxRet);
+    /**
+     * 返回request函数：type: get/post
+     */
+    private _getRequest(reqType, reqData);
+    /**
+     * 解析wx返回结果
+     */
+    private _parseWxRetBody(resBody, agentId);
+    /**
+     * WXHTTP
+     */
+    private _wxHttp(reqType, cmd, queryParam, agentId, reqData, newToken);
 }
