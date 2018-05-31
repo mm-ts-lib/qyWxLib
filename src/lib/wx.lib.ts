@@ -34,15 +34,14 @@ export default class WxLib {
   makeWeixinAuthUrl(reqUrl: string) {
     //去除url的code,stat参数
     const u1 = url.parse(reqUrl, true);
-    //console.log('AUTH URL:',u1);
+    _d('AUTH URL:================================', u1);
     const u = u1.protocol + '//' + u1.host + u1.pathname;
     //否则通知进行跳转,获取用户code
-    const wxurl =
-      'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' +
-      this._wxCfg.corpId +
-      '&redirect_uri=' +
-      encodeURIComponent(u) +
-      '&response_type=code&scope=snsapi_base&wxurl=zf#wechat_redirect';
+    const wxurl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${
+      this._wxCfg.corpId
+    }&redirect_uri=${encodeURIComponent(
+      u
+    )}&response_type=code&scope=snsapi_base&wxurl=zf#wechat_redirect`;
     return url.format(wxurl);
   }
   /**
