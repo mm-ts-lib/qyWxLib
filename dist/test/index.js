@@ -20,12 +20,17 @@ const cfg_school_wx_1 = __importDefault(require("./cfg.school.wx"));
     // await mongo.connect();
     // httpServer.start();
     try {
+        // 发送家校通消息
         // const _ret = await wx
         //   .getWxMsg()
         //   .sendText('26', '测试签到通知', '', '', '13');
         // console.log('================== _ret', _ret);
-        const _ret = await src_1.default.getWxLib().getUserInfoById('mengqi', 'txl');
-        console.log('================== _ret', _ret);
+        // code->userid
+        const _ret1 = await src_1.default.getWxLib().userFromCode('aaaaa', 'txl');
+        console.log('================== _ret', _ret1);
+        // 获取用户信息
+        // const _ret = await wx.getWxLib().getUserInfoById('mengqi', 'txl');
+        // console.log('================== _ret', _ret);
     }
     catch (e) {
         console.log('================== errr', e, typeof e);

@@ -23,6 +23,7 @@ export default class WxLib {
      */
     userFromCode(code: string, agentid: string): Promise<{
         UserId: string;
+        errcode: 'invalid oauth_code';
     }>;
     /**
      * 通过id获取用户信息

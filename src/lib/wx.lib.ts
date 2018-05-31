@@ -50,7 +50,10 @@ export default class WxLib {
    * @param code
    * @param agentid
    */
-  userFromCode(code: string, agentid: string): Promise<{ UserId: string }> {
+  userFromCode(
+    code: string,
+    agentid: string
+  ): Promise<{ UserId: string; errcode: 'invalid oauth_code' }> {
     return this._wxToken.wxApiGet(
       'user/getuserinfo',
       { access_token: this._wxToken.getLocalToken(agentid), code },

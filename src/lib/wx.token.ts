@@ -198,15 +198,18 @@ export default class WxToken {
             resolve(json); // 成功调用
             // resolve({ errcode: 'retry', newToken: '11111' });
             break;
-          case 40014:
-          case 41001:
-          case 42001:
+          case 40014: // 不合法的access_token
+          case 41001: // 缺少access_token参数
+          case 42001: // access_token已过期, access_token有时效性，需要重新获取一次
             {
               // {"errcode":41001,"errmsg":"access_token missing"}
               // 重试获取access_token,然后重新设置accesstoken,重新发起请求
               const newToken = await this._getRemoteToken(agentid);
               resolve({ errcode: 'retry', newToken });
             }
+            break;
+          case 40029: // 不合法的oauth_code
+            resolve({ errcode: 'invalid oauth_code' }); // 直接返回错误信息
             break;
           default:
             // 改版之后，返回结果中必定存在 errcode errmsg
