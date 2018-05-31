@@ -19,12 +19,12 @@ import wxCfg from './cfg.school.wx';
   // httpServer.start();
 
   try {
-    const _ret = await wx
-      .getWxMsg()
-      .sendText('26', '测试签到通知', '', '', '13');
-    console.log('================== _ret', _ret);
-    // const _ret = await wx.getWxLib().getUserInfoById('mengqi', '26');
+    // const _ret = await wx
+    //   .getWxMsg()
+    //   .sendText('26', '测试签到通知', '', '', '13');
     // console.log('================== _ret', _ret);
+    const _ret = await wx.getWxLib().getUserInfoById('mengqi', 'txl');
+    console.log('================== _ret', _ret);
   } catch (e) {
     console.log('================== errr', e, typeof e);
   }
