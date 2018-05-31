@@ -27,8 +27,7 @@ api.check = async data => {
     //1.首先获取用户code->ID
     const _ret1 = await wx.getWxLib().userFromCode(data.usercode, data.agentid);
     //2.然后获取id->info
-    const userid = 'mengqi';
-    const _ret2 = await wx.getWxLib().getUserInfoById(userid, data.agentid);
+    const _ret2 = await wx.getWxLib().getUserInfoById(_ret1.UserId, data.agentid);
     return { user: session.user };
   } else {
     console.log('用户会话无效,跳转微信认证:', data.url);
