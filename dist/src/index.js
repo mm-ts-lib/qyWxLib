@@ -29,6 +29,11 @@ class WX {
             throw new Error('WxLib Invalid!!');
         return this._wxLib.getWxMsg();
     }
+    getWxUser() {
+        if (lodash_1.default.isUndefined(this._wxLib))
+            throw new Error('WxLib Invalid!!');
+        return this._wxLib.getWxUser();
+    }
 }
 exports.WX = WX;
 exports.default = new WX();

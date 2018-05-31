@@ -1,5 +1,6 @@
 import WxLib from './lib/wx.lib';
 import WxMsg from './lib/wx.msg';
+import WxUser from './lib/wx.user';
 import { IWX_CFG } from './lib/def';
 export declare class WX {
     /** ******************************   私有变量    ******************************** * */
@@ -9,6 +10,7 @@ export declare class WX {
     createWx(wxCfg: IWX_CFG): void;
     getWxLib(): WxLib;
     getWxMsg(): WxMsg;
+    getWxUser(): WxUser;
 }
 declare const _default: WX;
 export default _default;

@@ -9,6 +9,7 @@ const _d = debug('@tslib/qyWxLib:' + path.basename(__filename));
 import _ from 'lodash';
 import WxLib from './lib/wx.lib';
 import WxMsg from './lib/wx.msg';
+import WxUser from './lib/wx.user';
 import { IWX_CFG } from './lib/def';
 
 export class WX {
@@ -28,6 +29,10 @@ export class WX {
   public getWxMsg() {
     if (_.isUndefined(this._wxLib)) throw new Error('WxLib Invalid!!');
     return this._wxLib.getWxMsg();
+  }
+  public getWxUser() {
+    if (_.isUndefined(this._wxLib)) throw new Error('WxLib Invalid!!');
+    return this._wxLib.getWxUser();
   }
   /** ******************************   私有函数    ******************************** * */
 }

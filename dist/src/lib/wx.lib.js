@@ -14,16 +14,21 @@ const lodash_1 = __importDefault(require("lodash"));
 const querystring_1 = __importDefault(require("querystring"));
 const wx_token_1 = __importDefault(require("./wx.token"));
 const wx_msg_1 = __importDefault(require("./wx.msg"));
+const wx_user_1 = __importDefault(require("./wx.user"));
 const url_1 = __importDefault(require("url"));
 class WxLib {
     constructor(cfg) {
         this._wxCfg = cfg;
         this._wxToken = new wx_token_1.default(cfg);
         this._wxMsg = new wx_msg_1.default(this._wxToken);
+        this._wxUser = new wx_user_1.default(this._wxToken);
     }
     /** ******************************   公有函数    ******************************** * */
     getWxMsg() {
         return this._wxMsg;
+    }
+    getWxUser() {
+        return this._wxUser;
     }
     /**
      * 构建微信认证进行跳转的url,去除url的所有请求参数,执行跳转认证
@@ -42,22 +47,6 @@ class WxLib {
         //否则通知进行跳转,获取用户code
         const wxurl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${this._wxCfg.corpId}&redirect_uri=${encodeURIComponent(u)}&response_type=code&scope=snsapi_base&wxurl=zf#wechat_redirect`;
         return url_1.default.format(wxurl);
-    }
-    /**
-     * 通过code获取用户信息
-     * @param code
-     * @param agentid
-     */
-    userFromCode(code, agentid) {
-        return this._wxToken.wxApiGet('user/getuserinfo', { access_token: this._wxToken.getLocalToken(agentid), code }, agentid);
-    }
-    /**
-     * 通过id获取用户信息
-     * @param userid
-     * @param agentid
-     */
-    getUserInfoById(userid, agentid) {
-        return this._wxToken.wxApiGet('user/get', { access_token: this._wxToken.getLocalToken(agentid), userid }, agentid);
     }
     /**
      * 上传临时素材

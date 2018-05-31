@@ -10,6 +10,7 @@ import _ from 'lodash';
 import querystring from 'querystring';
 import WxToken from './wx.token';
 import WxMsg from './wx.msg';
+import WxUser from './wx.user';
 import { IWX_CFG, ILOCAL_TOKENS, IWX_USER_INFO } from './def';
 import url from 'url';
 import { ReadStream } from 'tty';
@@ -19,14 +20,19 @@ export default class WxLib {
   private _wxCfg: IWX_CFG;
   private _wxToken: WxToken;
   private _wxMsg: WxMsg;
+  private _wxUser: WxUser;
   constructor(cfg: IWX_CFG) {
     this._wxCfg = cfg;
     this._wxToken = new WxToken(cfg);
     this._wxMsg = new WxMsg(this._wxToken);
+    this._wxUser = new WxUser(this._wxToken);
   }
   /** ******************************   公有函数    ******************************** * */
   public getWxMsg() {
     return this._wxMsg;
+  }
+  public getWxUser() {
+    return this._wxUser;
   }
   /**
    * 构建微信认证进行跳转的url,去除url的所有请求参数,执行跳转认证
@@ -49,33 +55,6 @@ export default class WxLib {
       u
     )}&response_type=code&scope=snsapi_base&wxurl=zf#wechat_redirect`;
     return url.format(wxurl);
-  }
-  /**
-   * 通过code获取用户信息
-   * @param code
-   * @param agentid
-   */
-  userFromCode(
-    code: string,
-    agentid: string
-  ): Promise<{ UserId: string; errcode: 'invalid oauth_code' }> {
-    return this._wxToken.wxApiGet(
-      'user/getuserinfo',
-      { access_token: this._wxToken.getLocalToken(agentid), code },
-      agentid
-    );
-  }
-  /**
-   * 通过id获取用户信息
-   * @param userid
-   * @param agentid
-   */
-  getUserInfoById(userid: string, agentid: string): Promise<IWX_USER_INFO> {
-    return this._wxToken.wxApiGet(
-      'user/get',
-      { access_token: this._wxToken.getLocalToken(agentid), userid },
-      agentid
-    );
   }
   /**
    * 上传临时素材
