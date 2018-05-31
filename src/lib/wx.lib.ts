@@ -36,13 +36,12 @@ export default class WxLib {
   makeWeixinAuthUrl(reqUrl: string) {
     const u1 = url.parse(reqUrl, true);
     //去除url的code,stat参数
-    let newSearchStr = '';
+    let u = `${u1.protocol}//${u1.host}${u1.pathname}`;
     if (!_.isEmpty(u1.query)) {
       delete u1.query['code'];
-      newSearchStr = querystring.stringify(u1.query);
+      const newSearchStr = querystring.stringify(u1.query);
+      u = `${u1.protocol}//${u1.host}${u1.pathname}?${newSearchStr}`;
     }
-
-    const u = `${u1.protocol}//${u1.host}${u1.pathname}?${newSearchStr}`;
     //否则通知进行跳转,获取用户code
     const wxurl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${
       this._wxCfg.corpId
