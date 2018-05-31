@@ -6,6 +6,8 @@ import path from 'path';
 import debug from 'debug';
 const _d = debug('@tslib/qyWxLib:' + path.basename(__filename));
 
+import _ from 'lodash';
+import querystring from 'querystring';
 import WxToken from './wx.token';
 import WxMsg from './wx.msg';
 import { IWX_CFG, ILOCAL_TOKENS, IWX_USER_INFO } from './def';
@@ -32,10 +34,15 @@ export default class WxLib {
    * @returns {string} 拼接的微信认证url字符串
    */
   makeWeixinAuthUrl(reqUrl: string) {
-    //去除url的code,stat参数
     const u1 = url.parse(reqUrl, true);
-    _d('AUTH URL:================================', u1);
-    const u = u1.protocol + '//' + u1.host + u1.pathname;
+    //去除url的code,stat参数
+    let newSearchStr = '';
+    if (!_.isEmpty(u1.query)) {
+      delete u1.query['code'];
+      newSearchStr = querystring.stringify(u1.query);
+    }
+
+    const u = `${u1.protocol}//${u1.host}${u1.pathname}?${newSearchStr}`;
     //否则通知进行跳转,获取用户code
     const wxurl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${
       this._wxCfg.corpId

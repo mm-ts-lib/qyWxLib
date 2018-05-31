@@ -10,6 +10,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = __importDefault(require("path"));
 const debug_1 = __importDefault(require("debug"));
 const _d = debug_1.default('@tslib/qyWxLib:' + path_1.default.basename(__filename));
+const lodash_1 = __importDefault(require("lodash"));
+const querystring_1 = __importDefault(require("querystring"));
 const wx_token_1 = __importDefault(require("./wx.token"));
 const wx_msg_1 = __importDefault(require("./wx.msg"));
 const url_1 = __importDefault(require("url"));
@@ -29,10 +31,14 @@ class WxLib {
      * @returns {string} 拼接的微信认证url字符串
      */
     makeWeixinAuthUrl(reqUrl) {
-        //去除url的code,stat参数
         const u1 = url_1.default.parse(reqUrl, true);
-        _d('AUTH URL:================================', u1);
-        const u = u1.protocol + '//' + u1.host + u1.pathname;
+        //去除url的code,stat参数
+        let newSearchStr = '';
+        if (!lodash_1.default.isEmpty(u1.query)) {
+            delete u1.query['code'];
+            newSearchStr = querystring_1.default.stringify(u1.query);
+        }
+        const u = `${u1.protocol}//${u1.host}${u1.pathname}?${newSearchStr}`;
         //否则通知进行跳转,获取用户code
         const wxurl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${this._wxCfg.corpId}&redirect_uri=${encodeURIComponent(u)}&response_type=code&scope=snsapi_base&wxurl=zf#wechat_redirect`;
         return url_1.default.format(wxurl);
