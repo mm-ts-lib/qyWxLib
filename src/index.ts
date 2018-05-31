@@ -11,11 +11,6 @@ import WxLib from './lib/wx.lib';
 import WxMsg from './lib/wx.msg';
 import { IWX_CFG } from './lib/def';
 
-// 导入Api路由
-import './router/api';
-import api from './api';
-export { api };
-
 export class WX {
   /** ******************************   私有变量    ******************************** * */
   private _wxLib?: WxLib;

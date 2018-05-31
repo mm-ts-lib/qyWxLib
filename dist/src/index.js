@@ -12,10 +12,6 @@ const debug_1 = __importDefault(require("debug"));
 const _d = debug_1.default('@tslib/qyWxLib:' + path_1.default.basename(__filename));
 const lodash_1 = __importDefault(require("lodash"));
 const wx_lib_1 = __importDefault(require("./lib/wx.lib"));
-// 导入Api路由
-require("./router/api");
-const api_1 = __importDefault(require("./api"));
-exports.api = api_1.default;
 class WX {
     constructor() { }
     /** ******************************   对外接口    ******************************** * */

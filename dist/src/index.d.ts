@@ -1,9 +1,6 @@
 import WxLib from './lib/wx.lib';
 import WxMsg from './lib/wx.msg';
 import { IWX_CFG } from './lib/def';
-import './router/api';
-import api from './api';
-export { api };
 export declare class WX {
     /** ******************************   私有变量    ******************************** * */
     private _wxLib?;

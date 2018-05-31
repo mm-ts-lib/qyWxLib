@@ -2,8 +2,8 @@
   "name": "@tslib/qy-wx-lib",
   "version": "0.0.2",
   "description": "TypeScript weixin",
-  "main": "dist/index.js",
-  "types": "dist/index.d.js",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.js",
   "scripts": {
     "test": "ts-node ./test/index.ts",
     "build": "tsc"

@@ -2,7 +2,7 @@ import debug from 'debug';
 import path from 'path';
 const _d = debug('app:' + path.basename(__filename, '.js'));
 
-import wx, { api } from '../src';
+import wx from '../src';
 import wxCfg from './cfg.school.wx';
 
 // 初始化数据库服务
