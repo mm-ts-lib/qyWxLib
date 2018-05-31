@@ -49,4 +49,8 @@ export default class WxToken {
      * WXHTTP
      */
     private _wxHttp(reqType, cmd, queryParam, agentid, reqData, newToken);
+    /**
+     * 重试
+     */
+    private _reqRetry(retryTimes, reqParams);
 }

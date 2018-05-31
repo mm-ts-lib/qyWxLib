@@ -41,33 +41,12 @@ class WxToken {
      * callback：回调函数
      */
     async wxApiGet(cmd, queryParam, agentid) {
-        let retryTimes = 3;
-        return new Promise((resolve, reject) => {
-            let _newToken = '';
-            const _attemptFn = async () => {
-                try {
-                    if (retryTimes <= 0) {
-                        reject({ message: 'Retry to Update AccessToken 3 times' });
-                    }
-                    else {
-                        const _getRet = await this._wxHttp('GET', cmd, queryParam, agentid, {}, _newToken);
-                        const _errcode = lodash_1.default.get(_getRet, 'errcode');
-                        if (_errcode === 'retry') {
-                            _newToken = lodash_1.default.get(_getRet, 'newToken');
-                            _d('+++++++++++++++++wxApiGet retry:', retryTimes);
-                            retryTimes -= 1;
-                            _attemptFn(); // 重试
-                        }
-                        else {
-                            resolve(_getRet);
-                        }
-                    }
-                }
-                catch (e) {
-                    reject(e);
-                }
-            };
-            _attemptFn();
+        return this._reqRetry(3, {
+            reqType: 'GET',
+            cmd,
+            queryParam,
+            agentid,
+            reqData: {}
         });
     }
     /**
@@ -78,7 +57,6 @@ class WxToken {
      * callback：回调函数
      */
     async wxApiPost(cmd, queryParam, postData, agentid, postType) {
-        let retryTimes = 3;
         // 组装post请求数据
         let _reqData = { url: '' };
         if (lodash_1.default.isEmpty(postType)) {
@@ -95,31 +73,12 @@ class WxToken {
                 formData: postData
             });
         }
-        return new Promise((resolve, reject) => {
-            const _attemptFn = async (newToken) => {
-                try {
-                    if (retryTimes <= 0) {
-                        reject({ message: 'Retry to Update AccessToken 3 times' });
-                    }
-                    else {
-                        const _postRet = await this._wxHttp('POST', cmd, queryParam, agentid, _reqData, newToken);
-                        const _errcode = lodash_1.default.get(_postRet, 'errcode');
-                        if (_errcode === 'retry') {
-                            newToken = lodash_1.default.get(_postRet, 'newToken');
-                            _d('+++++++++++++++++wxApiPost retry:', retryTimes);
-                            retryTimes -= 1;
-                            _attemptFn(newToken); // 重试
-                        }
-                        else {
-                            resolve(_postRet);
-                        }
-                    }
-                }
-                catch (e) {
-                    reject(e);
-                }
-            };
-            _attemptFn('');
+        return this._reqRetry(3, {
+            reqType: 'POST',
+            cmd,
+            queryParam,
+            agentid,
+            reqData: _reqData
         });
     }
     /** ******************************   私有函数    ******************************** * */
@@ -262,6 +221,37 @@ class WxToken {
             catch (e) {
                 reject(e); // 获取accessToken错误 + JSON.parse错误
             }
+        });
+    }
+    /**
+     * 重试
+     */
+    async _reqRetry(retryTimes, reqParams) {
+        return new Promise((resolve, reject) => {
+            const _attemptFn = async (newToken) => {
+                try {
+                    if (retryTimes <= 0) {
+                        reject({ message: 'Retry to Update AccessToken 3 times' });
+                    }
+                    else {
+                        const _postRet = await this._wxHttp(reqParams.reqType, reqParams.cmd, reqParams.queryParam, reqParams.agentid, reqParams.reqData, newToken);
+                        const _errcode = lodash_1.default.get(_postRet, 'errcode');
+                        if (_errcode === 'retry') {
+                            newToken = lodash_1.default.get(_postRet, 'newToken');
+                            _d('+++++++++++++++++wxApiPost retry:', retryTimes);
+                            retryTimes -= 1;
+                            _attemptFn(newToken); // 重试
+                        }
+                        else {
+                            resolve(_postRet);
+                        }
+                    }
+                }
+                catch (e) {
+                    reject(e);
+                }
+            };
+            _attemptFn('');
         });
     }
 }
