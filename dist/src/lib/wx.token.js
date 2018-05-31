@@ -217,6 +217,7 @@ class WxToken {
                 let _newUrl = `https://qyapi.weixin.qq.com/cgi-bin/${cmd}?${querystring_1.default.stringify(queryParam)}`;
                 lodash_1.default.set(reqData, 'url', _newUrl);
                 // 当access_token无效时，需要从新赋值，故需要querystring.stringify
+                // const _tmpReqData = _.clone(reqData);
                 const _resBody = await this._getRequest(reqType, reqData);
                 const _json = await this._parseWxRetBody(_resBody, agentid);
                 resolve(_json);

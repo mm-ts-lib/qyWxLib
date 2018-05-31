@@ -134,7 +134,6 @@ export default class WxToken {
         reject({ message: `应用ID${agentid}不存在` });
         return;
       }
-
       try {
         const _wxGetRet = await this.wxApiGet(
           'gettoken',
@@ -242,8 +241,8 @@ export default class WxToken {
           queryParam
         )}`;
         _.set(reqData, 'url', _newUrl);
-
         // 当access_token无效时，需要从新赋值，故需要querystring.stringify
+        // const _tmpReqData = _.clone(reqData);
         const _resBody = await this._getRequest(reqType, reqData);
         const _json = await this._parseWxRetBody(_resBody, agentid);
         resolve(_json);
