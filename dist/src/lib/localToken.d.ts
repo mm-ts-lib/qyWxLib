@@ -9,23 +9,17 @@ export default class WxToken {
     /** ******************************   公有函数    ******************************** * */
     /**
      * 从微信服务器获取访问令牌
-     * 获取不同应用的 access_Token
+     * 获取不同应用的 accessToken
      */
-    get_Remote_Token(agentid: string): Promise<{}>;
+    getRemoteToken(agentid: string): Promise<{}>;
     /**
-     * 获取缓存的access_token
+     * 获取缓存的accessToken
      */
     getLocalToken(agentid: string): string;
     /** ******************************   私有函数    ******************************** * */
-    private _get_Remote_JsapiTicket(agentid, access_token);
     private _getCurAgentInfo(agentid);
     /**
-     * 记录tokens
+     * 保存本地accessToken
      */
-    private _setToken(agentid, access_token, ticket, expires_in);
-    /**
-     * 定时检测是否过期
-     */
-    private _initTokens();
-    private _checkExpires();
+    private _saveLocalToken(agentid);
 }

@@ -1,9 +1,9 @@
-import WxToken from './wx.token';
+import WxHttp from './wx.http';
 import { IWX_MSG_RES } from './def';
 export default class WxMsg {
     /** ******************************   私有变量    ******************************** * */
-    private _wxToken;
-    constructor(newWxToken: WxToken);
+    private _wxHttp;
+    constructor(wxHttp: WxHttp);
     /** ******************************   公有函数    ******************************** * */
     /**
      * 发送文本消息

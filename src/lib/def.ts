@@ -19,10 +19,6 @@ export interface IWX_CFG {
     };
   };
 }
-// 本地保存token
-export interface ILOCAL_TOKENS {
-  [Name: string]: string;
-}
 // wxUserMsg
 // export interface IWX_USER_MSG {
 //   touser: string; // _userIdStr,

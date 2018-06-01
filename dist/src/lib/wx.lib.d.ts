@@ -6,7 +6,7 @@ import { ReadStream } from 'tty';
 export default class WxLib {
     /** ******************************   私有变量    ******************************** * */
     private _wxCfg;
-    private _wxToken;
+    private _wxHttp;
     private _wxMsg;
     private _wxUser;
     constructor(cfg: IWX_CFG);

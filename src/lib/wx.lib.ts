@@ -8,24 +8,24 @@ const _d = debug('@tslib/qyWxLib:' + path.basename(__filename));
 
 import _ from 'lodash';
 import querystring from 'querystring';
-import WxToken from './wx.token';
+import WxHttp from './wx.http';
 import WxMsg from './wx.msg';
 import WxUser from './wx.user';
-import { IWX_CFG, ILOCAL_TOKENS, IWX_USER_INFO } from './def';
+import { IWX_CFG } from './def';
 import url from 'url';
 import { ReadStream } from 'tty';
 
 export default class WxLib {
   /** ******************************   私有变量    ******************************** * */
   private _wxCfg: IWX_CFG;
-  private _wxToken: WxToken;
+  private _wxHttp: WxHttp;
   private _wxMsg: WxMsg;
   private _wxUser: WxUser;
   constructor(cfg: IWX_CFG) {
     this._wxCfg = cfg;
-    this._wxToken = new WxToken(cfg);
-    this._wxMsg = new WxMsg(this._wxToken);
-    this._wxUser = new WxUser(this._wxToken);
+    this._wxHttp = new WxHttp(cfg);
+    this._wxMsg = new WxMsg(this._wxHttp);
+    this._wxUser = new WxUser(this._wxHttp);
   }
   /** ******************************   公有函数    ******************************** * */
   public getWxMsg() {
@@ -45,8 +45,11 @@ export default class WxLib {
     let u = `${u1.protocol}//${u1.host}${u1.pathname}`;
     if (!_.isEmpty(u1.query)) {
       delete u1.query['code'];
-      const newSearchStr = querystring.stringify(u1.query);
-      u = `${u1.protocol}//${u1.host}${u1.pathname}?${newSearchStr}`;
+      if (!_.isEmpty(u1.query)) {
+        // 判断删除code之后还有无参数
+        const newSearchStr = querystring.stringify(u1.query);
+        u = `${u1.protocol}//${u1.host}${u1.pathname}?${newSearchStr}`;
+      }
     }
     //否则通知进行跳转,获取用户code
     const wxurl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${
@@ -69,9 +72,9 @@ export default class WxLib {
     type: 'image' | 'voice' | 'video' | 'file';
     media_id: string;
   }> {
-    return this._wxToken.wxApiPost(
+    return this._wxHttp.wxApiPost(
       'media/upload',
-      { access_token: this._wxToken.getLocalToken(agentid), type },
+      { access_token: this._wxHttp.getLocalToken(agentid), type },
       { media: fileStream },
       agentid,
       'postIMG'

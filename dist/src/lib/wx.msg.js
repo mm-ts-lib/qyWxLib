@@ -11,16 +11,16 @@ const path_1 = __importDefault(require("path"));
 const debug_1 = __importDefault(require("debug"));
 const _d = debug_1.default('@tslib/qyWxLib:' + path_1.default.basename(__filename));
 class WxMsg {
-    constructor(newWxToken) {
-        this._wxToken = newWxToken;
+    constructor(wxHttp) {
+        this._wxHttp = wxHttp;
     }
     /** ******************************   公有函数    ******************************** * */
     /**
      * 发送文本消息
      */
     async sendText(agentid, content, touser, toparty, totag) {
-        return this._wxToken.wxApiPost('message/send', {
-            access_token: this._wxToken.getLocalToken(agentid)
+        return this._wxHttp.wxApiPost('message/send', {
+            access_token: this._wxHttp.getLocalToken(agentid)
         }, {
             touser,
             toparty,
@@ -35,8 +35,8 @@ class WxMsg {
      * 发送图片消息
      */
     async sendImage(agentid, media_id, touser, toparty, totag) {
-        return this._wxToken.wxApiPost('message/send', {
-            access_token: this._wxToken.getLocalToken(agentid)
+        return this._wxHttp.wxApiPost('message/send', {
+            access_token: this._wxHttp.getLocalToken(agentid)
         }, {
             touser,
             toparty,

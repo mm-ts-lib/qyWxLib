@@ -12,16 +12,16 @@ const debug_1 = __importDefault(require("debug"));
 const _d = debug_1.default('@tslib/qyWxLib:' + path_1.default.basename(__filename));
 const lodash_1 = __importDefault(require("lodash"));
 const querystring_1 = __importDefault(require("querystring"));
-const wx_token_1 = __importDefault(require("./wx.token"));
+const wx_http_1 = __importDefault(require("./wx.http"));
 const wx_msg_1 = __importDefault(require("./wx.msg"));
 const wx_user_1 = __importDefault(require("./wx.user"));
 const url_1 = __importDefault(require("url"));
 class WxLib {
     constructor(cfg) {
         this._wxCfg = cfg;
-        this._wxToken = new wx_token_1.default(cfg);
-        this._wxMsg = new wx_msg_1.default(this._wxToken);
-        this._wxUser = new wx_user_1.default(this._wxToken);
+        this._wxHttp = new wx_http_1.default(cfg);
+        this._wxMsg = new wx_msg_1.default(this._wxHttp);
+        this._wxUser = new wx_user_1.default(this._wxHttp);
     }
     /** ******************************   公有函数    ******************************** * */
     getWxMsg() {
@@ -41,8 +41,11 @@ class WxLib {
         let u = `${u1.protocol}//${u1.host}${u1.pathname}`;
         if (!lodash_1.default.isEmpty(u1.query)) {
             delete u1.query['code'];
-            const newSearchStr = querystring_1.default.stringify(u1.query);
-            u = `${u1.protocol}//${u1.host}${u1.pathname}?${newSearchStr}`;
+            if (!lodash_1.default.isEmpty(u1.query)) {
+                // 判断删除code之后还有无参数
+                const newSearchStr = querystring_1.default.stringify(u1.query);
+                u = `${u1.protocol}//${u1.host}${u1.pathname}?${newSearchStr}`;
+            }
         }
         //否则通知进行跳转,获取用户code
         const wxurl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${this._wxCfg.corpId}&redirect_uri=${encodeURIComponent(u)}&response_type=code&scope=snsapi_base&wxurl=zf#wechat_redirect`;
@@ -52,7 +55,7 @@ class WxLib {
      * 上传临时素材
      */
     async uploadTempSrc(fileStream, agentid, type) {
-        return this._wxToken.wxApiPost('media/upload', { access_token: this._wxToken.getLocalToken(agentid), type }, { media: fileStream }, agentid, 'postIMG');
+        return this._wxHttp.wxApiPost('media/upload', { access_token: this._wxHttp.getLocalToken(agentid), type }, { media: fileStream }, agentid, 'postIMG');
     }
 }
 exports.default = WxLib;

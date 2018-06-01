@@ -1,1 +1,1 @@
-export {};
+import '../src/conf/tokensConf';

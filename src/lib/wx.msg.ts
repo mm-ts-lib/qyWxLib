@@ -6,15 +6,15 @@ import path from 'path';
 import debug from 'debug';
 const _d = debug('@tslib/qyWxLib:' + path.basename(__filename));
 
-import WxToken from './wx.token';
+import WxHttp from './wx.http';
 import { IWX_MSG_RES } from './def';
 
 export default class WxMsg {
   /** ******************************   私有变量    ******************************** * */
-  private _wxToken: WxToken;
+  private _wxHttp: WxHttp;
 
-  constructor(newWxToken: WxToken) {
-    this._wxToken = newWxToken;
+  constructor(wxHttp: WxHttp) {
+    this._wxHttp = wxHttp;
   }
   /** ******************************   公有函数    ******************************** * */
   /**
@@ -27,10 +27,10 @@ export default class WxMsg {
     toparty?: string,
     totag?: string
   ): Promise<IWX_MSG_RES> {
-    return this._wxToken.wxApiPost(
+    return this._wxHttp.wxApiPost(
       'message/send',
       {
-        access_token: this._wxToken.getLocalToken(agentid)
+        access_token: this._wxHttp.getLocalToken(agentid)
       },
       {
         touser, // _userIdStr,
@@ -54,10 +54,10 @@ export default class WxMsg {
     toparty?: string,
     totag?: string
   ): Promise<IWX_MSG_RES> {
-    return this._wxToken.wxApiPost(
+    return this._wxHttp.wxApiPost(
       'message/send',
       {
-        access_token: this._wxToken.getLocalToken(agentid)
+        access_token: this._wxHttp.getLocalToken(agentid)
       },
       {
         touser, // _userIdStr,

@@ -1,101 +1,106 @@
 /**
- * Created by mq on 18-05-30.
- * accessToken管理
+ * Created by mq on 18-06-01.
+ * 本地保存 access_token、jsapi_ticket
+ * 写入文件中 {
+ *  agentid, access_token、jsapi_ticket, expires过期时间
+ * }
+ * 每次启动时初始化本地记录，定时检测过期，
  */
 import path from 'path';
 import debug from 'debug';
 const _d = debug('@tslib/qyWxLib:' + path.basename(__filename));
 
 import _ from 'lodash';
-import request, { RequestPromiseOptions } from 'request-promise';
-import querystring from 'querystring';
-import { IWX_CFG, ILOCAL_TOKENS } from './def';
-import { UriOptions } from 'request';
-import { RequestOptions } from 'https';
-import { resolve } from 'url';
-import { reject } from 'bluebird';
+import moment from 'moment';
+import tokensConf, { ILOCAL_TOKENS } from '../conf/tokensConf';
+import WxHttp from './wx.http';
+import { IWX_CFG } from './def';
 
 export default class WxToken {
   /** ******************************   私有变量    ******************************** * */
-  private _tokens: ILOCAL_TOKENS = {}; // 分应用存储
   private _wxCfg: IWX_CFG; // 记录配置信息
+  private _wxHttp: WxHttp;
+  private _localTokens: ILOCAL_TOKENS; // 内存中记录
 
-  constructor(cfg: IWX_CFG) {
+  constructor(cfg: IWX_CFG, wxHttp: WxHttp) {
     this._wxCfg = cfg;
+    this._wxHttp = wxHttp;
+    // 读取配置文件
+    this._localTokens = tokensConf.tokens;
+    this._initTokens();
+    this._checkExpires();
   }
   /** ******************************   公有函数    ******************************** * */
   /**
-   * 获取缓存的accessToken
+   * 从微信服务器获取访问令牌
+   * 获取不同应用的 access_Token
    */
-  public getLocalToken(agentid: string): string {
+  public async get_Remote_Token(agentid: string) {
+    const curAgentInfo = this._getCurAgentInfo(agentid);
+
+    return new Promise(async (resolve, reject) => {
+      if (_.isEmpty(curAgentInfo)) {
+        reject({ message: `应用ID${agentid}不存在` });
+        return;
+      }
+      try {
+        const _wxGetRet_token = await this._wxHttp.wxApiGet(
+          'gettoken',
+          {
+            corpid: curAgentInfo.corpId,
+            corpsecret: curAgentInfo.secret
+          },
+          agentid
+        );
+        const _errcode_token: number = _.get(_wxGetRet_token, 'errcode');
+        const _newToken: string = _.get(_wxGetRet_token, 'access_token');
+        if (_errcode_token === 0) {
+          const _wxGetRet_ticket = await this._get_Remote_JsapiTicket(
+            agentid,
+            _newToken
+          );
+          const _errcode_ticket: number = _.get(_wxGetRet_ticket, 'errcode');
+          if (_errcode_ticket === 0) {
+            this._setToken(
+              agentid,
+              _newToken,
+              _wxGetRet_ticket.ticket,
+              Math.min(_wxGetRet_token.expires_in, _wxGetRet_ticket.expires_in)
+            );
+          } else {
+            _d('获取jsapi_ticket错误', _wxGetRet_ticket);
+          }
+        } else {
+          _d('获取access_token错误', _wxGetRet_token);
+        }
+        resolve(_newToken);
+      } catch (e) {
+        _d('WX GET ACCESS_FAIL:', e);
+        reject(e);
+      }
+    });
+  }
+  /**
+   * 获取缓存的access_token
+   */
+  public getLocalToken(agentid: string) {
     if (_.isString(agentid)) {
-      const _retToken = this._tokens[agentid];
-      if (_retToken) {
-        return _retToken;
+      const _retTokenObj = this._localTokens[agentid];
+      if (_retTokenObj) {
+        return _retTokenObj.access_token;
       }
     }
     // 其他返回默认值
     const _defaultAgentId = this._wxCfg.agents[0].agentid;
-    return this._tokens[_defaultAgentId];
-  }
-  /**
-   *发送微信api Get请求
-   * cmd：请求命令 ‘message/send‘
-   * queryParam：请求url上所带参数,{access_token:self.accessToken} => ?access_token=xxx
-   * callback：回调函数
-   */
-  public async wxApiGet(
-    cmd: string,
-    queryParam: object,
-    agentid: string
-  ): Promise<any> {
-    return this._reqRetry(3, {
-      reqType: 'GET',
-      cmd,
-      queryParam,
-      agentid,
-      reqData: {}
-    });
-  }
-  /**
-   *发送微信api Post请求
-   * cmd：请求命令 ‘message/send‘
-   * queryParam：请求url上所带参数,{access_token:self.accessToken} => ?access_token=xxx
-   * postData：post参数
-   * callback：回调函数
-   */
-  public async wxApiPost(
-    cmd: string,
-    queryParam: object,
-    postData: object,
-    agentid: string,
-    postType?: string
-  ): Promise<any> {
-    // 组装post请求数据
-    let _reqData = { url: '' };
-    if (_.isEmpty(postType)) {
-      _reqData = Object.assign(_reqData, {
-        headers: {
-          'Content-type': 'application/json'
-        },
-        json: postData
-      });
-    } else {
-      // postType用来指定调用xml请求时
-      _reqData = Object.assign(_reqData, {
-        formData: postData
-      });
-    }
-
-    return this._reqRetry(3, {
-      reqType: 'POST',
-      cmd,
-      queryParam,
-      agentid,
-      reqData: _reqData
-    });
+    return _.get(this._localTokens[_defaultAgentId], 'access_token');
   }
   /** ******************************   私有函数    ******************************** * */
+  /*
+   * 获取jsapi_ticket
+   * */
+  private async _get_Remote_JsapiTicket(agentid: string, access_token: string) {
+    return this._wxHttp.wxApiGet('get_jsapi_ticket', { access_token }, agentid);
+  }
   /*
    * 查找当前应用配置信息
    * */
@@ -122,181 +127,63 @@ export default class WxToken {
     };
   }
   /**
-   * 从微信服务器获取访问令牌
-   * 获取不同应用的 accessToken
-   * @param cb 成功后的回调函数,原型:function(err,accessToken)
+   * 记录tokens
    */
-  private async _getRemoteToken(agentid: string) {
-    const curAgentInfo = this._getCurAgentInfo(agentid);
-
-    return new Promise(async (resolve, reject) => {
-      if (_.isEmpty(curAgentInfo)) {
-        reject({ message: `应用ID${agentid}不存在` });
-        return;
-      }
-      try {
-        const _wxGetRet = await this.wxApiGet(
-          'gettoken',
-          {
-            corpid: curAgentInfo.corpId,
-            corpsecret: curAgentInfo.secret
-          },
-          agentid
-        );
-        _d('WX GET ACCESS:', typeof _wxGetRet, _wxGetRet);
-        const _aToken: string = _.get(_wxGetRet, 'access_token');
-        if (_.isString(curAgentInfo.agentid)) {
-          this._tokens[curAgentInfo.agentid] = _aToken;
-        }
-        resolve(_aToken);
-      } catch (e) {
-        _d('WX GET ACCESS_FAIL:', e);
-        reject(e);
-      }
-    });
-  }
-  /** ******************************   WX GET POST    ******************************** * */
-  /**
-   * 解析返回的结果 json/string -> json
-   */
-  private async _wxResBody_ToJson(wxRet: object | string) {
-    return new Promise((resolve, reject) => {
-      if (_.isString(wxRet)) {
-        try {
-          // 防止json解析出错
-          resolve(JSON.parse(wxRet));
-        } catch (e) {
-          reject({ message: `wxRet：${wxRet} NOT JSON` });
-          return;
-        }
-      }
-      resolve(wxRet);
-    });
-  }
-  /**
-   * 返回request函数：type: get/post
-   */
-  private async _getRequest(reqType: 'GET' | 'POST', reqData: any) {
-    if (reqType === 'POST') {
-      return request.post(reqData);
-    }
-    return request.get(reqData);
-  }
-  /**
-   * 解析wx返回结果
-   */
-  private async _parseWxRetBody(resBody: object | string, agentid: string) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        // get请求只返回string, post返回json/string
-        const json = await this._wxResBody_ToJson(resBody);
-        // 检测accessToken错误,发现错误后重新获取accessToken,然后重试
-        const _errCode = _.get(json, 'errcode');
-        switch (_errCode) {
-          case 0:
-            resolve(json); // 成功调用
-            // resolve({ errcode: 'retry', newToken: '11111' });
-            break;
-          case 40014: // 不合法的access_token
-          case 41001: // 缺少access_token参数
-          case 42001: // access_token已过期, access_token有时效性，需要重新获取一次
-            {
-              // {"errcode":41001,"errmsg":"access_token missing"}
-              // 重试获取access_token,然后重新设置accesstoken,重新发起请求
-              const newToken = await this._getRemoteToken(agentid);
-              resolve({ errcode: 'retry', newToken });
-            }
-            break;
-          case 40029: // 不合法的oauth_code
-            resolve({ errcode: 'invalid oauth_code' }); // 直接返回错误信息
-            break;
-          default:
-            // 改版之后，返回结果中必定存在 errcode errmsg
-            reject({ message: `json.errcode:${_errCode}` });
-            break;
-        }
-      } catch (e) {
-        reject(e);
-      }
-    });
-  }
-  /**
-   * WXHTTP
-   */
-  private async _wxHttp(
-    reqType: 'GET' | 'POST',
-    cmd: string,
-    queryParam: object,
+  private _setToken(
     agentid: string,
-    reqData: object,
-    newToken: string
-  ) {
-    // 成功更新accessToken //注：access_token在queryParam中
-    if (!_.isEmpty(newToken)) {
-      _.set(queryParam, 'access_token', newToken);
-    }
-    return new Promise(async (resolve, reject) => {
-      try {
-        let _newUrl = `https://qyapi.weixin.qq.com/cgi-bin/${cmd}?${querystring.stringify(
-          queryParam
-        )}`;
-        _.set(reqData, 'url', _newUrl);
-        // 当access_token无效时，需要从新赋值，故需要querystring.stringify
-        // const _tmpReqData = _.clone(reqData);
-        const _resBody = await this._getRequest(reqType, reqData);
-        const _json = await this._parseWxRetBody(_resBody, agentid);
-        resolve(_json);
-      } catch (e) {
-        reject(e); // 获取accessToken错误 + JSON.parse错误
-      }
+    access_token: string,
+    ticket: string,
+    expires_in: number
+  ): void {
+    // 重新计算超时时间
+    const _newExpires = new Date().getTime() + (expires_in - 1000) * 1000;
+    _.set(this._localTokens, agentid, {
+      agentid,
+      access_token,
+      ticket,
+      expires: _newExpires
     });
   }
   /**
-   * 重试
+   * 定时检测是否过期
    */
-  private async _reqRetry(
-    retryTimes: number,
-    reqParams: {
-      cmd: string;
-      queryParam: object;
-      agentid: string;
-      reqType: 'GET' | 'POST';
-      reqData: object;
-    }
-  ) {
-    return new Promise((resolve, reject) => {
-      const _attemptFn = async (newToken: string) => {
-        try {
-          if (retryTimes <= 0) {
-            reject({ message: 'Retry to Update AccessToken 3 times' });
-          } else {
-            const _postRet = await this._wxHttp(
-              reqParams.reqType,
-              reqParams.cmd,
-              reqParams.queryParam,
-              reqParams.agentid,
-              reqParams.reqData,
-              newToken
-            );
-
-            const _errcode = _.get(_postRet, 'errcode');
-            if (_errcode === 'retry') {
-              newToken = _.get(_postRet, 'newToken');
-              _d('+++++++++++++++++wxApiPost retry:', retryTimes);
-              retryTimes -= 1;
-              _attemptFn(newToken); // 重试
-            } else {
-              resolve(_postRet);
-            }
-          }
-        } catch (e) {
-          reject(e);
-        }
-      };
-
-      _attemptFn('');
+  private _initTokens() {
+    // 遍历cfg文件
+    _.forEach(this._wxCfg.agents, item => {
+      if (_.isEmpty(this._localTokens[item.agentid])) {
+        _.set(this._localTokens, item.agentid, {
+          agentid: item.agentid,
+          access_token: '',
+          ticket: '',
+          expires: 0
+        });
+      }
     });
+  }
+  private async _checkExpires() {
+    // _d('==============定时检测token', moment().format('HH:mm:ss'));
+    const _curTimeMs = new Date().getTime();
+    let _bRefreshData = false;
+    // 遍历本地存储
+    for (let key in this._localTokens) {
+      const _curToken = this._localTokens[key];
+      if (_curTimeMs > _curToken.expires) {
+        // 超时，重新获取
+        try {
+          _d('更新Token===============', moment().format('HH:mm:ss'));
+          await this.get_Remote_Token(key);
+          _bRefreshData = true;
+        } catch (e) {
+          _d('更新Token出错', e);
+        }
+      }
+    }
+    if (_bRefreshData) {
+      tokensConf.tokens = this._localTokens;
+      tokensConf._save();
+    }
+    setTimeout(() => {
+      this._checkExpires();
+    }, 10 * 1000);
   }
 }
-
-// export default new Token();

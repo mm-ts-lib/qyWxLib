@@ -16,9 +16,6 @@ export interface IWX_CFG {
         };
     };
 }
-export interface ILOCAL_TOKENS {
-    [Name: string]: string;
-}
 export interface IWX_USER_INFO {
     errcode: number;
     errmsg: string;
