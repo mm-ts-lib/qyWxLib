@@ -57,9 +57,9 @@ export default class WxLib {
     //否则通知进行跳转,获取用户code
     const wxurl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${
       this._wxCfg.corpId
-    }&redirect_uri=${encodeURIComponent(
-      u
-    )}&response_type=code&scope=snsapi_base&wxurl=zf#wechat_redirect`;
+      }&redirect_uri=${encodeURIComponent(
+        u
+      )}&response_type=code&scope=snsapi_base&wxurl=zf#wechat_redirect`;
     return url.format(wxurl);
   }
   /**
@@ -80,7 +80,7 @@ export default class WxLib {
       { access_token: this._wxHttp.getLocalToken(agentid), type },
       { media: fileStream },
       agentid,
-      'postIMG'
+      'formdata'
     );
   }
   /** ******************************   私有函数    ******************************** * */

@@ -56,11 +56,11 @@ export default class WxHttp {
     queryParam: object,
     postData: object,
     agentid: string,
-    postType?: string
+    postType?: 'json' | 'formdata'
   ): Promise<any> {
     // 组装post请求数据
     let _reqData = { url: '' };
-    if (_.isEmpty(postType)) {
+    if (_.isEmpty(postType) || postType === 'json') {
       _reqData = Object.assign(_reqData, {
         headers: {
           'Content-type': 'application/json'

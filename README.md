@@ -32,7 +32,19 @@ await wx.getWxUser().userFromCode();
 ### 3. wxUser 用户管理
 
 * userFromCode: 通过 code 获取用户信息
+
+
+### 4. wsTxl 通讯录
+
+* deptCreate: 创建部门
+* deptUpdate: 更新部门
+* deptDept: 删除部门
 * getUserInfoById: 通过 id 获取用户信息
+* userCreate: 创建成员
+* userUpdate: 更新成员
+* userDel: 批量删除成员
+* userSimpleList: 通过部门id，获取部门成员列表(简单信息)
+* userList: 通过部门id，获取部门成员列表(详情)
 
 ## 三、开放调试方法
 

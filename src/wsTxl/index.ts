@@ -7,8 +7,8 @@ import debug from 'debug';
 const _d = debug('@tslib/qyWxLib:' + path.basename(__filename));
 
 import WxHttp from '../lib/wx.http';
-import UserMgt from './userMgt';
-import DeptMgt from './userMgt';
+import UserMgt from './UserMgt';
+import DeptMgt from './DeptMgt';
 
 export default class WxTxl {
   /** ******************************   私有变量    ******************************** * */

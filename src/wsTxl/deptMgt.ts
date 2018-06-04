@@ -25,7 +25,7 @@ export default class DeptMgt {
   * order	否	在父部门中的次序值。order值大的排序靠前。有效的值范围是[0, 2^32)
   * id	否	部门id，整型。指定时必须大于1，否则自动生成
   * */
-  deptCreate(deptName: string, parentDeptId: string): Promise<{ ret: 'ok' }> {
+  deptCreate(deptName: string, parentDeptId: number): Promise<{ errcode: number }> {
     return this._wxHttp.wxApiPost(
       'department/create',
       { access_token: this._wxHttp.getLocalToken(TXL_AGENT_ID) },
@@ -42,10 +42,10 @@ export default class DeptMgt {
   * order	否	在父部门中的次序值。order值大的排序靠前。有效的值范围是[0, 2^32)
   * */
   deptUpdate(
-    deptId: string,
+    deptId: number,
     deptName?: string,
-    parentDeptId?: string
-  ): Promise<{ ret: 'ok' }> {
+    parentDeptId?: number
+  ): Promise<{ errcode: number }> {
     const postData = {
       id: deptId // 需要修改的部门Id
     };
@@ -69,7 +69,7 @@ export default class DeptMgt {
   * 删除部门
   * id	否	部门id。（注：不能删除根部门；不能删除含有子部门、成员的部门）
   * */
-  deptDept(deptId: string): Promise<{ ret: 'ok' }> {
+  deptDept(deptId: number): Promise<{ errcode: number }> {
     const postData = {
       id: deptId
     };

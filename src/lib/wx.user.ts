@@ -8,7 +8,7 @@ import debug from 'debug';
 const _d = debug('@tslib/qyWxLib:' + path.basename(__filename));
 
 import WxHttp from './wx.http';
-import { IWX_USER_INFO } from './def';
+
 
 export default class WxUser {
   /** ******************************   私有变量    ******************************** * */
@@ -23,7 +23,7 @@ export default class WxUser {
    * @param code
    * @param agentid
    */
-  userFromCode(
+  public async userFromCode(
     code: string,
     agentid: string
   ): Promise<{ UserId: string; errcode: 'invalid oauth_code' }> {
@@ -33,18 +33,7 @@ export default class WxUser {
       agentid
     );
   }
-  /**
-   * 通过id获取用户信息
-   * @param userid
-   * @param agentid
-   */
-  getUserInfoById(userid: string, agentid: string): Promise<IWX_USER_INFO> {
-    return this._wxHttp.wxApiGet(
-      'user/get',
-      { access_token: this._wxHttp.getLocalToken(agentid), userid },
-      agentid
-    );
-  }
+
 
   /** ******************************   私有函数    ******************************** * */
 }

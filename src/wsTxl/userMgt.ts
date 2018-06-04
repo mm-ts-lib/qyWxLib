@@ -9,7 +9,7 @@ const _d = debug('@tslib/qyWxLib:' + path.basename(__filename));
 
 import _ from 'lodash';
 import WxHttp from '../lib/wx.http';
-import { TXL_AGENT_ID } from './txlDef';
+import { TXL_AGENT_ID, IWX_USER_INFO } from './txlDef';
 
 export default class UserMgt {
   /** ******************************   私有变量    ******************************** * */
@@ -19,6 +19,18 @@ export default class UserMgt {
     this._wxHttp = wxHttp;
   }
   /** ******************************   公有函数    ******************************** * */
+  /**
+   * 通过id获取用户信息
+   * @param userid
+   * @param agentid
+   */
+  public async getUserInfoById(userid: string, agentid: string): Promise<IWX_USER_INFO> {
+    return this._wxHttp.wxApiGet(
+      'user/get',
+      { access_token: this._wxHttp.getLocalToken(agentid), userid },
+      agentid
+    );
+  }
   /*
   * 创建成员
   * name	是	成员名称。长度为1~64个字节
@@ -35,12 +47,12 @@ export default class UserMgt {
   * enable	否	启用/禁用成员。1表示启用成员，0表示禁用成员
   * extattr	否	自定义字段。自定义字段需要先在WEB管理端“我的企业” — “通讯录管理”添加，否则忽略未知属性的赋值
   * */
-  userCreate(
+  public async userCreate(
     wxId: string,
     userName: string,
     userMobile: string,
-    deptId: string
-  ): Promise<{ ret: 'ok' }> {
+    deptId: number
+  ): Promise<{ errcode: number }> {
     const postData = {
       userid: wxId,
       name: userName,
@@ -71,11 +83,11 @@ export default class UserMgt {
   * enable	否	启用/禁用成员。1表示启用成员，0表示禁用成员
   * extattr	否	扩展属性。扩展属性需要在WEB管理端创建后才生效，否则忽略未知属性的赋值
   * */
-  userUpdate(
+  public async userUpdate(
     wxId: string,
     userName: string,
-    deptIdArr: Array<string>
-  ): Promise<{ ret: 'ok' }> {
+    deptIdArr: Array<number>
+  ): Promise<{ errcode: number }> {
     // 修改的内容
     const postData = {
       userid: wxId
@@ -103,7 +115,7 @@ export default class UserMgt {
   * 批量删除成员
   * userIdArr: 是	成员UserID列表。对应管理端的帐号。（最多支持200个）
   * */
-  userDel(userIdArr: Array<string>): Promise<{ ret: 'ok' }> {
+  public async userDel(userIdArr: Array<string>): Promise<{ errcode: number }> {
     const postData = {
       useridlist: userIdArr
     };
@@ -119,7 +131,13 @@ export default class UserMgt {
   * 获取部门成员列表(简单信息)
   * deptId: 部门Id
   * */
-  userSimpleList(deptId: string, fetchChild?: 0 | 1): Promise<{ ret: 'ok' }> {
+  public async userSimpleList(deptId: number, fetchChild?: 0 | 1): Promise<{
+    userlist: Array<{
+      userid: string,
+      name: string,
+      department: Array<number>
+    }>
+  }> {
     let _fetchChild = 0;
     if (fetchChild) {
       _fetchChild = 1;
@@ -138,7 +156,7 @@ export default class UserMgt {
   * 获取部门成员列表(详情)
   * deptId: 部门Id
   * */
-  userList(deptId: string, fetchChild?: 0 | 1): Promise<{ ret: 'ok' }> {
+  public async userList(deptId: number, fetchChild?: 0 | 1): Promise<{ userlist: Array<IWX_USER_INFO> }> {
     let _fetchChild = 0;
     if (fetchChild) {
       _fetchChild = 1;
