@@ -91,6 +91,8 @@ class UserMgt {
     * deptId: 部门Id
     * */
     userSimpleList(deptId, fetchChild) {
+        // department_id	是	获取的部门id
+        // fetch_child	否	1/0：是否递归获取子部门下面的成员
         let _fetchChild = 0;
         if (fetchChild) {
             _fetchChild = 1;
@@ -106,6 +108,8 @@ class UserMgt {
     * deptId: 部门Id
     * */
     userList(deptId, fetchChild) {
+        // department_id	是	获取的部门id
+        // fetch_child	否	1/0：是否递归获取子部门下面的成员
         let _fetchChild = 0;
         if (fetchChild) {
             _fetchChild = 1;
