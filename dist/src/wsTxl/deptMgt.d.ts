@@ -4,13 +4,13 @@ export default class DeptMgt {
     private _wxHttp;
     constructor(wxHttp: WxHttp);
     /** ******************************   公有函数    ******************************** * */
-    deptCreate(deptName: string, parentDeptId: string): Promise<{
-        ret: 'ok';
+    deptCreate(deptName: string, parentDeptId: number): Promise<{
+        errcode: number;
     }>;
-    deptUpdate(deptId: string, deptName?: string, parentDeptId?: string): Promise<{
-        ret: 'ok';
+    deptUpdate(deptId: number, deptName?: string, parentDeptId?: number): Promise<{
+        errcode: number;
     }>;
-    deptDept(deptId: string): Promise<{
-        ret: 'ok';
+    deptDept(deptId: number): Promise<{
+        errcode: number;
     }>;
 }

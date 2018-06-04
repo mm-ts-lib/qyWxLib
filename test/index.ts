@@ -14,7 +14,7 @@ import '../src/conf/tokensConf';
 const _testFn = async () => {
   try {
     _d('==============定时检测token', moment().format('HH:mm:ss'));
-    const _ret = await wx.getWxUser().getUserInfoById('mengqi', 'txl');
+    const _ret = await wx.getWxTxl().getUserMgt().getUserInfoById('mengqi');
     setTimeout(() => {
       _testFn();
     }, 30 * 1000);

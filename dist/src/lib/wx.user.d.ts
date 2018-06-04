@@ -1,5 +1,4 @@
 import WxHttp from './wx.http';
-import { IWX_USER_INFO } from './def';
 export default class WxUser {
     /** ******************************   私有变量    ******************************** * */
     private _wxHttp;
@@ -14,10 +13,4 @@ export default class WxUser {
         UserId: string;
         errcode: 'invalid oauth_code';
     }>;
-    /**
-     * 通过id获取用户信息
-     * @param userid
-     * @param agentid
-     */
-    getUserInfoById(userid: string, agentid: string): Promise<IWX_USER_INFO>;
 }

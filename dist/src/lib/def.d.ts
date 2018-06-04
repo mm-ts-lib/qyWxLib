@@ -16,15 +16,6 @@ export interface IWX_CFG {
         };
     };
 }
-export interface IWX_USER_INFO {
-    errcode: number;
-    errmsg: string;
-    userid: string;
-    name: string;
-    department: Array<number>;
-    mobile: string;
-    enable: number;
-}
 export interface IWX_MSG_RES {
     errcode: number;
     errmsg: string;

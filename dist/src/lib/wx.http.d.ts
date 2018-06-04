@@ -19,7 +19,7 @@ export default class WxHttp {
      * postData：post参数
      * callback：回调函数
      */
-    wxApiPost(cmd: string, queryParam: object, postData: object, agentid: string, postType?: string): Promise<any>;
+    wxApiPost(cmd: string, queryParam: object, postData: object, agentid: string, postType?: 'json' | 'formdata'): Promise<any>;
     /** ******************************   私有函数    ******************************** * */
     /** ******************************   WX GET POST    ******************************** * */
     /**

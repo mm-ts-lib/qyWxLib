@@ -24,11 +24,24 @@ export default class UserMgt {
    * @param userid
    * @param agentid
    */
-  public async getUserInfoById(userid: string, agentid: string): Promise<IWX_USER_INFO> {
+  public async getUserInfoById(userid: string): Promise<IWX_USER_INFO> {
     return this._wxHttp.wxApiGet(
       'user/get',
-      { access_token: this._wxHttp.getLocalToken(agentid), userid },
-      agentid
+      { access_token: this._wxHttp.getLocalToken(TXL_AGENT_ID), userid },
+      TXL_AGENT_ID
+    );
+  }
+  /**
+ * 通过id获取用户信息
+ * @param userid
+ * @param agentid
+ */
+  public async getOpenIdByUserId(userid: string): Promise<IWX_USER_INFO> {
+    return this._wxHttp.wxApiPost(
+      'user/convert_to_openid',
+      { access_token: this._wxHttp.getLocalToken(TXL_AGENT_ID) },
+      { userid },
+      TXL_AGENT_ID,
     );
   }
   /*

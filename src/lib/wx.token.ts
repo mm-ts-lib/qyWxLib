@@ -42,7 +42,7 @@ export default class WxToken {
     }
     const _wxGetRet_token = await this._wxHttp.wxApiGet(
       'gettoken',
-      { corpid: curAgentInfo.corpId, corpsecret: curAgentInfo.secret },
+      { corpid: _.get(curAgentInfo, 'corpId'), corpsecret: _.get(curAgentInfo, 'secret') },
       agentid
     );
     const _errcode_token: number = _.get(_wxGetRet_token, 'errcode');

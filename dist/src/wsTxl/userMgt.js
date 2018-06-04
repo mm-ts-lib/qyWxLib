@@ -3,20 +3,33 @@
  * Created by mq on 18-05-30.
  * 发送wx应用消息
  */
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const path_1 = __importDefault(require("path"));
-const debug_1 = __importDefault(require("debug"));
+const path_1 = require("path");
+const debug_1 = require("debug");
 const _d = debug_1.default('@tslib/qyWxLib:' + path_1.default.basename(__filename));
-const lodash_1 = __importDefault(require("lodash"));
+const lodash_1 = require("lodash");
 const txlDef_1 = require("./txlDef");
 class UserMgt {
     constructor(wxHttp) {
         this._wxHttp = wxHttp;
     }
     /** ******************************   公有函数    ******************************** * */
+    /**
+     * 通过id获取用户信息
+     * @param userid
+     * @param agentid
+     */
+    async getUserInfoById(userid) {
+        return this._wxHttp.wxApiGet('user/get', { access_token: this._wxHttp.getLocalToken(txlDef_1.TXL_AGENT_ID), userid }, txlDef_1.TXL_AGENT_ID);
+    }
+    /**
+   * 通过id获取用户信息
+   * @param userid
+   * @param agentid
+   */
+    async getOpenIdByUserId(userid) {
+        return this._wxHttp.wxApiPost('user/convert_to_openid', { access_token: this._wxHttp.getLocalToken(txlDef_1.TXL_AGENT_ID) }, { userid }, txlDef_1.TXL_AGENT_ID);
+    }
     /*
     * 创建成员
     * name	是	成员名称。长度为1~64个字节
@@ -33,7 +46,7 @@ class UserMgt {
     * enable	否	启用/禁用成员。1表示启用成员，0表示禁用成员
     * extattr	否	自定义字段。自定义字段需要先在WEB管理端“我的企业” — “通讯录管理”添加，否则忽略未知属性的赋值
     * */
-    userCreate(wxId, userName, userMobile, deptId) {
+    async userCreate(wxId, userName, userMobile, deptId) {
         const postData = {
             userid: wxId,
             name: userName,
@@ -58,7 +71,7 @@ class UserMgt {
     * enable	否	启用/禁用成员。1表示启用成员，0表示禁用成员
     * extattr	否	扩展属性。扩展属性需要在WEB管理端创建后才生效，否则忽略未知属性的赋值
     * */
-    userUpdate(wxId, userName, deptIdArr) {
+    async userUpdate(wxId, userName, deptIdArr) {
         // 修改的内容
         const postData = {
             userid: wxId
@@ -80,7 +93,7 @@ class UserMgt {
     * 批量删除成员
     * userIdArr: 是	成员UserID列表。对应管理端的帐号。（最多支持200个）
     * */
-    userDel(userIdArr) {
+    async userDel(userIdArr) {
         const postData = {
             useridlist: userIdArr
         };
@@ -90,9 +103,7 @@ class UserMgt {
     * 获取部门成员列表(简单信息)
     * deptId: 部门Id
     * */
-    userSimpleList(deptId, fetchChild) {
-        // department_id	是	获取的部门id
-        // fetch_child	否	1/0：是否递归获取子部门下面的成员
+    async userSimpleList(deptId, fetchChild) {
         let _fetchChild = 0;
         if (fetchChild) {
             _fetchChild = 1;
@@ -107,9 +118,7 @@ class UserMgt {
     * 获取部门成员列表(详情)
     * deptId: 部门Id
     * */
-    userList(deptId, fetchChild) {
-        // department_id	是	获取的部门id
-        // fetch_child	否	1/0：是否递归获取子部门下面的成员
+    async userList(deptId, fetchChild) {
         let _fetchChild = 0;
         if (fetchChild) {
             _fetchChild = 1;
@@ -122,4 +131,4 @@ class UserMgt {
     }
 }
 exports.default = UserMgt;
-//# sourceMappingURL=userMgt.js.map
+//# sourceMappingURL=UserMgt.js.map

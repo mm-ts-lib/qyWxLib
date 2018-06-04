@@ -1,5 +1,6 @@
 import WxHttp from '../lib/wx.http';
-import UserMgt from './userMgt';
+import UserMgt from './UserMgt';
+import DeptMgt from './DeptMgt';
 export default class WxTxl {
     /** ******************************   私有变量    ******************************** * */
     private _wxHttp;
@@ -8,5 +9,5 @@ export default class WxTxl {
     constructor(wxHttp: WxHttp);
     /** ******************************   公有函数    ******************************** * */
     getUserMgt(): UserMgt;
-    getDeptMgt(): UserMgt;
+    getDeptMgt(): DeptMgt;
 }
