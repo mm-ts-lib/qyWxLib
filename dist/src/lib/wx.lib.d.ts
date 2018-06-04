@@ -1,4 +1,5 @@
 /// <reference types="node" />
+import WxHttp from './wx.http';
 import WxMsg from './wx.msg';
 import WxUser from './wx.user';
 import { IWX_CFG } from './def';
@@ -13,6 +14,7 @@ export default class WxLib {
     /** ******************************   公有函数    ******************************** * */
     getWxMsg(): WxMsg;
     getWxUser(): WxUser;
+    getWxHttp(): WxHttp;
     /**
      * 构建微信认证进行跳转的url,去除url的所有请求参数,执行跳转认证
      * @param reqUrl 请求的url

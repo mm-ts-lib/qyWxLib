@@ -34,12 +34,15 @@ export default class WxLib {
   public getWxUser() {
     return this._wxUser;
   }
+  public getWxHttp() {
+    return this._wxHttp;
+  }
   /**
    * 构建微信认证进行跳转的url,去除url的所有请求参数,执行跳转认证
    * @param reqUrl 请求的url
    * @returns {string} 拼接的微信认证url字符串
    */
-  makeWeixinAuthUrl(reqUrl: string) {
+  public makeWeixinAuthUrl(reqUrl: string) {
     const u1 = url.parse(reqUrl, true);
     //去除url的code,stat参数
     let u = `${u1.protocol}//${u1.host}${u1.pathname}`;

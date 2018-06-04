@@ -12,12 +12,14 @@ const debug_1 = __importDefault(require("debug"));
 const _d = debug_1.default('@tslib/qyWxLib:' + path_1.default.basename(__filename));
 const lodash_1 = __importDefault(require("lodash"));
 const wx_lib_1 = __importDefault(require("./lib/wx.lib"));
+const wsTxl_1 = __importDefault(require("./wsTxl"));
 class WX {
     constructor() { }
     /** ******************************   对外接口    ******************************** * */
     // 根据配置文件生成wx内部函数
     createWx(wxCfg) {
         this._wxLib = new wx_lib_1.default(wxCfg);
+        this._wxTxl = new wsTxl_1.default(this._wxLib.getWxHttp());
     }
     getWxLib() {
         if (lodash_1.default.isUndefined(this._wxLib))
@@ -33,6 +35,11 @@ class WX {
         if (lodash_1.default.isUndefined(this._wxLib))
             throw new Error('WxLib Invalid!!');
         return this._wxLib.getWxUser();
+    }
+    getWxTxl() {
+        if (lodash_1.default.isUndefined(this._wxTxl))
+            throw new Error('WxTxl Invalid!!');
+        return this._wxTxl;
     }
 }
 exports.WX = WX;

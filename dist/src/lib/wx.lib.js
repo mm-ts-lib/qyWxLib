@@ -30,6 +30,9 @@ class WxLib {
     getWxUser() {
         return this._wxUser;
     }
+    getWxHttp() {
+        return this._wxHttp;
+    }
     /**
      * 构建微信认证进行跳转的url,去除url的所有请求参数,执行跳转认证
      * @param reqUrl 请求的url

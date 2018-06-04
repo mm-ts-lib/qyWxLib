@@ -160,36 +160,6 @@ class WxHttp {
             }
         };
         return _attemptFn('');
-        // return new Promise((resolve, reject) => {
-        //   const _attemptFn = async (newToken: string) => {
-        //     try {
-        //       if (retryTimes <= 0) {
-        //         reject({ message: 'Retry to Update AccessToken 3 times' });
-        //       } else {
-        //         const _postRet = await this._wxHttpReq(
-        //           reqParams.reqType,
-        //           reqParams.cmd,
-        //           reqParams.queryParam,
-        //           reqParams.agentid,
-        //           reqParams.reqData,
-        //           newToken
-        //         );
-        //         const _errcode = _.get(_postRet, 'errcode');
-        //         if (_errcode === 'retry') {
-        //           newToken = _.get(_postRet, 'newToken');
-        //           _d('+++++++++++++++++wxApiPost retry:', retryTimes);
-        //           retryTimes -= 1;
-        //           _attemptFn(newToken); // 重试
-        //         } else {
-        //           resolve(_postRet);
-        //         }
-        //       }
-        //     } catch (e) {
-        //       reject(e);
-        //     }
-        //   };
-        //   _attemptFn('');
-        // });
     }
 }
 exports.default = WxHttp;
