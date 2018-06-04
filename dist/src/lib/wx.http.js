@@ -1,19 +1,16 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Created by mq on 18-05-30.
  * accessToken管理
  */
-const path_1 = __importDefault(require("path"));
-const debug_1 = __importDefault(require("debug"));
+const path_1 = require("path");
+const debug_1 = require("debug");
 const _d = debug_1.default('@tslib/qyWxLib:' + path_1.default.basename(__filename));
-const lodash_1 = __importDefault(require("lodash"));
-const request_promise_1 = __importDefault(require("request-promise"));
-const querystring_1 = __importDefault(require("querystring"));
-const wx_token_1 = __importDefault(require("./wx.token"));
+const lodash_1 = require("lodash");
+const request_promise_1 = require("request-promise");
+const querystring_1 = require("querystring");
+const wx_token_1 = require("./wx.token");
 class WxHttp {
     constructor(cfg) {
         this._wxToken = new wx_token_1.default(cfg, this);
@@ -118,7 +115,7 @@ class WxHttp {
                         break;
                     case 40014: // 不合法的access_token
                     case 41001: // 缺少access_token参数
-                    case 42001: // access_token已过期, access_token有时效性，需要重新获取一次
+                    case 42001:// access_token已过期, access_token有时效性，需要重新获取一次
                         {
                             // {"errcode":41001,"errmsg":"access_token missing"}
                             // 重试获取access_token,然后重新设置accesstoken,重新发起请求
@@ -126,7 +123,7 @@ class WxHttp {
                             resolve({ errcode: 'retry', newToken });
                         }
                         break;
-                    case 40029: // 不合法的oauth_code
+                    case 40029:// 不合法的oauth_code
                         resolve({ errcode: 'invalid oauth_code' }); // 直接返回错误信息
                         break;
                     default:

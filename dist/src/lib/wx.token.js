@@ -1,7 +1,4 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Created by mq on 18-06-01.
@@ -11,12 +8,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * }
  * 每次启动时初始化本地记录，定时检测过期，
  */
-const path_1 = __importDefault(require("path"));
-const debug_1 = __importDefault(require("debug"));
+const path_1 = require("path");
+const debug_1 = require("debug");
 const _d = debug_1.default('@tslib/qyWxLib:' + path_1.default.basename(__filename));
-const lodash_1 = __importDefault(require("lodash"));
-const moment_1 = __importDefault(require("moment"));
-const tokensConf_1 = __importDefault(require("../conf/tokensConf"));
+const lodash_1 = require("lodash");
+const moment_1 = require("moment");
+const tokensConf_1 = require("../conf/tokensConf");
 class WxToken {
     constructor(cfg, wxHttp) {
         this._wxCfg = cfg;
@@ -170,4 +167,4 @@ class WxToken {
     }
 }
 exports.default = WxToken;
-//# sourceMappingURL=wx.Token.js.map
+//# sourceMappingURL=wx.token.js.map
