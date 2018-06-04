@@ -11,7 +11,7 @@ export default class WxToken {
      * 从微信服务器获取访问令牌
      * 获取不同应用的 access_Token
      */
-    get_Remote_Token(agentid: string): Promise<{}>;
+    get_Remote_Token(agentid: string): Promise<string>;
     /**
      * 获取缓存的access_token
      */

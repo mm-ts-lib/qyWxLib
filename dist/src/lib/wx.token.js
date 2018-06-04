@@ -33,38 +33,26 @@ class WxToken {
      */
     async get_Remote_Token(agentid) {
         const curAgentInfo = this._getCurAgentInfo(agentid);
-        return new Promise(async (resolve, reject) => {
-            if (lodash_1.default.isEmpty(curAgentInfo)) {
-                reject({ message: `应用ID${agentid}不存在` });
-                return;
+        if (lodash_1.default.isEmpty(curAgentInfo)) {
+            throw new Error(`应用ID${agentid}不存在`);
+        }
+        const _wxGetRet_token = await this._wxHttp.wxApiGet('gettoken', { corpid: curAgentInfo.corpId, corpsecret: curAgentInfo.secret }, agentid);
+        const _errcode_token = lodash_1.default.get(_wxGetRet_token, 'errcode');
+        const _newToken = lodash_1.default.get(_wxGetRet_token, 'access_token');
+        if (_errcode_token === 0) {
+            const _wxGetRet_ticket = await this._get_Remote_JsapiTicket(agentid, _newToken);
+            const _errcode_ticket = lodash_1.default.get(_wxGetRet_ticket, 'errcode');
+            if (_errcode_ticket === 0) {
+                this._setToken(agentid, _newToken, _wxGetRet_ticket.ticket, Math.min(_wxGetRet_token.expires_in, _wxGetRet_ticket.expires_in));
             }
-            try {
-                const _wxGetRet_token = await this._wxHttp.wxApiGet('gettoken', {
-                    corpid: curAgentInfo.corpId,
-                    corpsecret: curAgentInfo.secret
-                }, agentid);
-                const _errcode_token = lodash_1.default.get(_wxGetRet_token, 'errcode');
-                const _newToken = lodash_1.default.get(_wxGetRet_token, 'access_token');
-                if (_errcode_token === 0) {
-                    const _wxGetRet_ticket = await this._get_Remote_JsapiTicket(agentid, _newToken);
-                    const _errcode_ticket = lodash_1.default.get(_wxGetRet_ticket, 'errcode');
-                    if (_errcode_ticket === 0) {
-                        this._setToken(agentid, _newToken, _wxGetRet_ticket.ticket, Math.min(_wxGetRet_token.expires_in, _wxGetRet_ticket.expires_in));
-                    }
-                    else {
-                        _d('获取jsapi_ticket错误', _wxGetRet_ticket);
-                    }
-                }
-                else {
-                    _d('获取access_token错误', _wxGetRet_token);
-                }
-                resolve(_newToken);
+            else {
+                _d('获取jsapi_ticket错误', _wxGetRet_ticket);
             }
-            catch (e) {
-                _d('WX GET ACCESS_FAIL:', e);
-                reject(e);
-            }
-        });
+        }
+        else {
+            _d('获取access_token错误', _wxGetRet_token);
+        }
+        return _newToken;
     }
     /**
      * 获取缓存的access_token
@@ -170,4 +158,4 @@ class WxToken {
     }
 }
 exports.default = WxToken;
-//# sourceMappingURL=wx.Token.js.map
+//# sourceMappingURL=wx.token.js.map

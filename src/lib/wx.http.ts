@@ -89,18 +89,11 @@ export default class WxHttp {
    * 解析返回的结果 json/string -> json
    */
   private async _wxResBody_ToJson(wxRet: object | string) {
-    return new Promise((resolve, reject) => {
-      if (_.isString(wxRet)) {
-        try {
-          // 防止json解析出错
-          resolve(JSON.parse(wxRet));
-        } catch (e) {
-          reject({ message: `wxRet：${wxRet} NOT JSON` });
-          return;
-        }
-      }
-      resolve(wxRet);
-    });
+    if (_.isString(wxRet)) {
+      // 防止json解析出错
+      return JSON.parse(wxRet);
+    }
+    return wxRet;
   }
   /**
    * 返回request函数：type: get/post
@@ -115,39 +108,28 @@ export default class WxHttp {
    * 解析wx返回结果
    */
   private async _parseWxRetBody(resBody: object | string, agentid: string) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        // get请求只返回string, post返回json/string
-        const json = await this._wxResBody_ToJson(resBody);
-        // 检测accessToken错误,发现错误后重新获取accessToken,然后重试
-        const _errCode = _.get(json, 'errcode');
-        switch (_errCode) {
-          case 0:
-            resolve(json); // 成功调用
-            // resolve({ errcode: 'retry', newToken: '11111' });
-            break;
-          case 40014: // 不合法的access_token
-          case 41001: // 缺少access_token参数
-          case 42001: // access_token已过期, access_token有时效性，需要重新获取一次
-            {
-              // {"errcode":41001,"errmsg":"access_token missing"}
-              // 重试获取access_token,然后重新设置accesstoken,重新发起请求
-              const newToken = await this._wxToken.get_Remote_Token(agentid);
-              resolve({ errcode: 'retry', newToken });
-            }
-            break;
-          case 40029: // 不合法的oauth_code
-            resolve({ errcode: 'invalid oauth_code' }); // 直接返回错误信息
-            break;
-          default:
-            // 改版之后，返回结果中必定存在 errcode errmsg
-            reject({ message: `json.errcode:${_errCode}` });
-            break;
-        }
-      } catch (e) {
-        reject(e);
+    // get请求只返回string, post返回json/string
+    const json = await this._wxResBody_ToJson(resBody);
+    // 检测accessToken错误,发现错误后重新获取accessToken,然后重试
+    const _errCode = _.get(json, 'errcode');
+    switch (_errCode) {
+      case 0:
+        return json; // 成功调用
+      case 40014: // 不合法的access_token
+      case 41001: // 缺少access_token参数
+      case 42001: {
+        // access_token已过期, access_token有时效性，需要重新获取一次
+        // {"errcode":41001,"errmsg":"access_token missing"}
+        // 重试获取access_token,然后重新设置accesstoken,重新发起请求
+        const newToken = await this._wxToken.get_Remote_Token(agentid);
+        return { errcode: 'retry', newToken };
       }
-    });
+      case 40029: // 不合法的oauth_code
+        return { errcode: 'invalid oauth_code' }; // 直接返回错误信息
+      default:
+        // 改版之后，返回结果中必定存在 errcode errmsg
+        throw new Error(`json.errcode:${_errCode}`);
+    }
   }
   /**
    * WxHttPReq
@@ -164,21 +146,16 @@ export default class WxHttp {
     if (!_.isEmpty(newToken)) {
       _.set(queryParam, 'access_token', newToken);
     }
-    return new Promise(async (resolve, reject) => {
-      try {
-        let _newUrl = `https://qyapi.weixin.qq.com/cgi-bin/${cmd}?${querystring.stringify(
-          queryParam
-        )}`;
-        _.set(reqData, 'url', _newUrl);
-        // 当access_token无效时，需要从新赋值，故需要querystring.stringify
-        // const _tmpReqData = _.clone(reqData);
-        const _resBody = await this._getRequest(reqType, reqData);
-        const _json = await this._parseWxRetBody(_resBody, agentid);
-        resolve(_json);
-      } catch (e) {
-        reject(e); // 获取accessToken错误 + JSON.parse错误
-      }
-    });
+    let _newUrl = `https://qyapi.weixin.qq.com/cgi-bin/${cmd}?${querystring.stringify(
+      queryParam
+    )}`;
+    _.set(reqData, 'url', _newUrl);
+    // 当access_token无效时，需要从新赋值，故需要querystring.stringify
+    // const _tmpReqData = _.clone(reqData);
+    const _resBody = await this._getRequest(reqType, reqData);
+    const _json = await this._parseWxRetBody(_resBody, agentid);
+    return _json;
+    // 获取accessToken错误 + JSON.parse错误
   }
   /**
    * 重试
@@ -193,38 +170,64 @@ export default class WxHttp {
       reqData: object;
     }
   ) {
-    return new Promise((resolve, reject) => {
-      const _attemptFn = async (newToken: string) => {
-        try {
-          if (retryTimes <= 0) {
-            reject({ message: 'Retry to Update AccessToken 3 times' });
-          } else {
-            const _postRet = await this._wxHttpReq(
-              reqParams.reqType,
-              reqParams.cmd,
-              reqParams.queryParam,
-              reqParams.agentid,
-              reqParams.reqData,
-              newToken
-            );
+    const _attemptFn = async (newToken: string) => {
+      if (retryTimes <= 0) {
+        throw new Error('Retry to Update AccessToken 3 times');
+      } else {
+        const _postRet = await this._wxHttpReq(
+          reqParams.reqType,
+          reqParams.cmd,
+          reqParams.queryParam,
+          reqParams.agentid,
+          reqParams.reqData,
+          newToken
+        );
 
-            const _errcode = _.get(_postRet, 'errcode');
-            if (_errcode === 'retry') {
-              newToken = _.get(_postRet, 'newToken');
-              _d('+++++++++++++++++wxApiPost retry:', retryTimes);
-              retryTimes -= 1;
-              _attemptFn(newToken); // 重试
-            } else {
-              resolve(_postRet);
-            }
-          }
-        } catch (e) {
-          reject(e);
+        const _errcode = _.get(_postRet, 'errcode');
+        if (_errcode === 'retry') {
+          newToken = _.get(_postRet, 'newToken');
+          _d('+++++++++++++++++wxApiPost retry:', retryTimes);
+          retryTimes -= 1;
+          _attemptFn(newToken); // 重试
+        } else {
+          return _postRet;
         }
-      };
+      }
+    };
 
-      _attemptFn('');
-    });
+    return _attemptFn('');
+    // return new Promise((resolve, reject) => {
+    //   const _attemptFn = async (newToken: string) => {
+    //     try {
+    //       if (retryTimes <= 0) {
+    //         reject({ message: 'Retry to Update AccessToken 3 times' });
+    //       } else {
+    //         const _postRet = await this._wxHttpReq(
+    //           reqParams.reqType,
+    //           reqParams.cmd,
+    //           reqParams.queryParam,
+    //           reqParams.agentid,
+    //           reqParams.reqData,
+    //           newToken
+    //         );
+
+    //         const _errcode = _.get(_postRet, 'errcode');
+    //         if (_errcode === 'retry') {
+    //           newToken = _.get(_postRet, 'newToken');
+    //           _d('+++++++++++++++++wxApiPost retry:', retryTimes);
+    //           retryTimes -= 1;
+    //           _attemptFn(newToken); // 重试
+    //         } else {
+    //           resolve(_postRet);
+    //         }
+    //       }
+    //     } catch (e) {
+    //       reject(e);
+    //     }
+    //   };
+
+    //   _attemptFn('');
+    // });
   }
 }
 
