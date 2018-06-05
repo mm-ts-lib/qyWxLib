@@ -24,8 +24,13 @@ export default class WxToken {
      */
     private _setToken(agentid, access_token, ticket, expires_in);
     /**
-     * 定时检测是否过期
+     * 对照配置文件，初始化本地 tokens
+     * 添加新增应用
+     * 删除多余应用
      */
     private _initTokens();
+    /**
+     * 定时检测是否过期
+     */
     private _checkExpires();
 }

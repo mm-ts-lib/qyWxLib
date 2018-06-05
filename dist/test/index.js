@@ -1,11 +1,14 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const debug_1 = require("debug");
-const path_1 = require("path");
+const debug_1 = __importDefault(require("debug"));
+const path_1 = __importDefault(require("path"));
 const _d = debug_1.default('app:' + path_1.default.basename(__filename, '.js'));
-const moment_1 = require("moment");
-const src_1 = require("../src");
-const cfg_school_wx_1 = require("./cfg.school.wx");
+const moment_1 = __importDefault(require("moment"));
+const src_1 = __importDefault(require("../src"));
+const cfg_school_wx_1 = __importDefault(require("./cfg.school.wx"));
 require("../src/conf/tokensConf");
 // 初始化数据库服务
 // import { mongo } from './db';

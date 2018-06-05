@@ -3,11 +3,14 @@
  * Created by mq on 18-05-30.
  * 发送wx应用消息
  */
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const path_1 = require("path");
-const debug_1 = require("debug");
+const path_1 = __importDefault(require("path"));
+const debug_1 = __importDefault(require("debug"));
 const _d = debug_1.default('@tslib/qyWxLib:' + path_1.default.basename(__filename));
-const lodash_1 = require("lodash");
+const lodash_1 = __importDefault(require("lodash"));
 const txlDef_1 = require("./txlDef");
 class UserMgt {
     constructor(wxHttp) {

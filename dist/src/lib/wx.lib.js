@@ -1,18 +1,21 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Created by mq on 18-05-30.
  * wx内部逻辑
  */
-const path_1 = require("path");
-const debug_1 = require("debug");
+const path_1 = __importDefault(require("path"));
+const debug_1 = __importDefault(require("debug"));
 const _d = debug_1.default('@tslib/qyWxLib:' + path_1.default.basename(__filename));
-const lodash_1 = require("lodash");
-const querystring_1 = require("querystring");
-const wx_http_1 = require("./wx.http");
-const wx_msg_1 = require("./wx.msg");
-const wx_user_1 = require("./wx.user");
-const url_1 = require("url");
+const lodash_1 = __importDefault(require("lodash"));
+const querystring_1 = __importDefault(require("querystring"));
+const wx_http_1 = __importDefault(require("./wx.http"));
+const wx_msg_1 = __importDefault(require("./wx.msg"));
+const wx_user_1 = __importDefault(require("./wx.user"));
+const url_1 = __importDefault(require("url"));
 class WxLib {
     constructor(cfg) {
         this._wxCfg = cfg;

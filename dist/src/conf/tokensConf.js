@@ -1,4 +1,7 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Created by mq on 18-06-01.
@@ -8,8 +11,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * }
  * 每次启动时初始化本地记录，定时检测过期，
  */
-const path_1 = require("path");
-const debug_1 = require("debug");
+const path_1 = __importDefault(require("path"));
+const debug_1 = __importDefault(require("debug"));
 const _d = debug_1.default('@tslib/qyWxLib:' + path_1.default.basename(__filename));
 const conf_1 = require("@tslib/conf");
 // 配置文件路径

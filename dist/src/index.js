@@ -1,15 +1,18 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Created by mq on 18-05-30.
  * 企业微信库主接口
  */
-const path_1 = require("path");
-const debug_1 = require("debug");
+const path_1 = __importDefault(require("path"));
+const debug_1 = __importDefault(require("debug"));
 const _d = debug_1.default('@tslib/qyWxLib:' + path_1.default.basename(__filename));
-const lodash_1 = require("lodash");
-const wx_lib_1 = require("./lib/wx.lib");
-const wsTxl_1 = require("./wsTxl");
+const lodash_1 = __importDefault(require("lodash"));
+const wx_lib_1 = __importDefault(require("./lib/wx.lib"));
+const wsTxl_1 = __importDefault(require("./wsTxl"));
 class WX {
     constructor() { }
     /** ******************************   对外接口    ******************************** * */

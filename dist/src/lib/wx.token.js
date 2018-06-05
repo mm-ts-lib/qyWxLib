@@ -1,4 +1,7 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Created by mq on 18-06-01.
@@ -8,12 +11,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * }
  * 每次启动时初始化本地记录，定时检测过期，
  */
-const path_1 = require("path");
-const debug_1 = require("debug");
+const path_1 = __importDefault(require("path"));
+const debug_1 = __importDefault(require("debug"));
 const _d = debug_1.default('@tslib/qyWxLib:' + path_1.default.basename(__filename));
-const lodash_1 = require("lodash");
-const moment_1 = require("moment");
-const tokensConf_1 = require("../conf/tokensConf");
+const lodash_1 = __importDefault(require("lodash"));
+const moment_1 = __importDefault(require("moment"));
+const tokensConf_1 = __importDefault(require("../conf/tokensConf"));
 class WxToken {
     constructor(cfg, wxHttp) {
         this._wxCfg = cfg;
@@ -111,10 +114,20 @@ class WxToken {
         });
     }
     /**
-     * 定时检测是否过期
+     * 对照配置文件，初始化本地 tokens
+     * 添加新增应用
+     * 删除多余应用
      */
     _initTokens() {
-        // 遍历cfg文件
+        // 先遍历 tokens 删除多余应用 
+        for (let agentid in this._localTokens) {
+            // 在_wxCfg.agents中查找
+            const _index = lodash_1.default.findIndex(this._wxCfg.agents, o => o.agentid === agentid);
+            if (_index < 0) { // 配置文件中未找到，删除
+                delete this._localTokens[agentid];
+            }
+        }
+        // 遍历cfg文件，添加新增应用
         lodash_1.default.forEach(this._wxCfg.agents, item => {
             if (lodash_1.default.isEmpty(this._localTokens[item.agentid])) {
                 lodash_1.default.set(this._localTokens, item.agentid, {
@@ -126,6 +139,9 @@ class WxToken {
             }
         });
     }
+    /**
+     * 定时检测是否过期
+     */
     async _checkExpires() {
         // _d('==============定时检测token', moment().format('HH:mm:ss'));
         const _curTimeMs = new Date().getTime();

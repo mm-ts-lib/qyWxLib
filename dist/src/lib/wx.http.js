@@ -1,16 +1,19 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Created by mq on 18-05-30.
  * accessToken管理
  */
-const path_1 = require("path");
-const debug_1 = require("debug");
+const path_1 = __importDefault(require("path"));
+const debug_1 = __importDefault(require("debug"));
 const _d = debug_1.default('@tslib/qyWxLib:' + path_1.default.basename(__filename));
-const lodash_1 = require("lodash");
-const request_promise_1 = require("request-promise");
-const querystring_1 = require("querystring");
-const wx_token_1 = require("./wx.token");
+const lodash_1 = __importDefault(require("lodash"));
+const request_promise_1 = __importDefault(require("request-promise"));
+const querystring_1 = __importDefault(require("querystring"));
+const wx_token_1 = __importDefault(require("./wx.token"));
 class WxHttp {
     constructor(cfg) {
         this._wxToken = new wx_token_1.default(cfg, this);
@@ -110,7 +113,7 @@ class WxHttp {
                 const newToken = await this._wxToken.get_Remote_Token(agentid);
                 return { errcode: 'retry', newToken };
             }
-            case 40029:// 不合法的oauth_code
+            case 40029: // 不合法的oauth_code
                 return { errcode: 'invalid oauth_code' }; // 直接返回错误信息
             default:
                 // 改版之后，返回结果中必定存在 errcode errmsg

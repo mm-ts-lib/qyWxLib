@@ -133,10 +133,20 @@ export default class WxToken {
     });
   }
   /**
-   * 定时检测是否过期
+   * 对照配置文件，初始化本地 tokens
+   * 添加新增应用
+   * 删除多余应用
    */
   private _initTokens() {
-    // 遍历cfg文件
+    // 先遍历 tokens 删除多余应用 
+    for (let agentid in this._localTokens) {
+      // 在_wxCfg.agents中查找
+      const _index = _.findIndex(this._wxCfg.agents, o => o.agentid === agentid);
+      if (_index < 0) { // 配置文件中未找到，删除
+        delete this._localTokens[agentid];
+      }
+    }
+    // 遍历cfg文件，添加新增应用
     _.forEach(this._wxCfg.agents, item => {
       if (_.isEmpty(this._localTokens[item.agentid])) {
         _.set(this._localTokens, item.agentid, {
@@ -148,6 +158,9 @@ export default class WxToken {
       }
     });
   }
+  /**
+   * 定时检测是否过期
+   */
   private async _checkExpires() {
     // _d('==============定时检测token', moment().format('HH:mm:ss'));
     const _curTimeMs = new Date().getTime();
