@@ -24,3 +24,10 @@ export interface IWX_USER_INFO {
   // order: Array<number>; //[ 0 ],
   // qr_code: string; //'http://open.work.weixin.qq.com/wwopen/userQRCode?vcode=vc2a0e5f4373adf93e'
 }
+
+// wx部门信息
+export interface IWX_DEPT_INFO {
+  id: number;
+  name: string;
+  parentid: number;
+}

@@ -11,17 +11,17 @@ import '../src/conf/tokensConf';
 // // 初始化http服务器
 // import httpServer from './httpServer/httpServer';
 
-const _testFn = async () => {
-  try {
-    _d('==============定时检测token', moment().format('HH:mm:ss'));
-    const _ret = await wx.getWxTxl().getUserMgt().getUserInfoById('mengqi');
-    setTimeout(() => {
-      _testFn();
-    }, 30 * 1000);
-  } catch (e) {
-    console.log('================== errr', e, typeof e);
-  }
-};
+// const _testFn = async () => {
+//   try {
+//     _d('==============定时检测token', moment().format('HH:mm:ss'));
+//     const _ret = await wx.getWxTxl().getUserMgt().getUserInfoById('mengqi');
+//     setTimeout(() => {
+//       _testFn();
+//     }, 30 * 1000);
+//   } catch (e) {
+//     console.log('================== errr', e, typeof e);
+//   }
+// };
 
 // 异步启动应用服务
 (async () => {
@@ -31,7 +31,7 @@ const _testFn = async () => {
   // await mongo.connect();
 
   // httpServer.start();
-  _testFn();
+  // _testFn();
   try {
     // 发送家校通消息
     // const _ret = await wx
@@ -48,6 +48,12 @@ const _testFn = async () => {
     // const reqUrl = 'http://www.baidu.com#/';
     // const _ret = await wx.getWxLib().makeWeixinAuthUrl(reqUrl);
     // console.log('================== _ret', _ret);
+
+    const _ret = await wx
+      .getWxTxl()
+      .getDeptMgt()
+      .getDeptArr();
+    console.log('================== _ret', _ret);
   } catch (e) {
     console.log('================== errr', e, typeof e);
   }

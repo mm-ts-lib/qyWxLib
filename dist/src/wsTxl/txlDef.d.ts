@@ -8,3 +8,8 @@ export interface IWX_USER_INFO {
     mobile: string;
     enable: number;
 }
+export interface IWX_DEPT_INFO {
+    id: number;
+    name: string;
+    parentid: number;
+}
