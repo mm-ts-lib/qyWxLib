@@ -68,12 +68,13 @@ class DeptMgt {
     * */
     async deptDept(deptId) {
         const postData = {
-            id: deptId
+        // id: deptId
         };
         // if (deptId) {  // 否	部门id。（注：不能删除根部门；不能删除含有子部门、成员的部门）
         //   _.set(postData, 'id', deptId);
         // }
-        return this._wxHttp.wxApiPost('department/delete', { access_token: this._wxHttp.getLocalToken(txlDef_1.TXL_AGENT_ID) }, postData, txlDef_1.TXL_AGENT_ID);
+        return this._wxHttp.wxApiPost('department/delete', { access_token: this._wxHttp.getLocalToken(txlDef_1.TXL_AGENT_ID),
+            id: deptId }, postData, txlDef_1.TXL_AGENT_ID);
     }
 }
 exports.default = DeptMgt;

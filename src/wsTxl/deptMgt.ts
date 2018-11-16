@@ -93,7 +93,7 @@ export default class DeptMgt {
   * */
   public async deptDept(deptId: number): Promise<{ errcode: number }> {
     const postData = {
-      id: deptId
+      // id: deptId
     };
     // if (deptId) {  // 否	部门id。（注：不能删除根部门；不能删除含有子部门、成员的部门）
     //   _.set(postData, 'id', deptId);
@@ -101,7 +101,8 @@ export default class DeptMgt {
 
     return this._wxHttp.wxApiPost(
       'department/delete',
-      { access_token: this._wxHttp.getLocalToken(TXL_AGENT_ID) },
+      { access_token: this._wxHttp.getLocalToken(TXL_AGENT_ID),
+      id: deptId },
       postData,
       TXL_AGENT_ID
     );

@@ -1,3 +1,7 @@
+/**
+ * Created by mq on 18-05-30.
+ * 发送wx应用消息
+ */
 import WxHttp from '../lib/wx.http';
 import { IWX_USER_INFO } from './txlDef';
 export default class UserMgt {

@@ -25,21 +25,21 @@ export default class WxHttp {
     /**
      * 解析返回的结果 json/string -> json
      */
-    private _wxResBody_ToJson(wxRet);
+    private _wxResBody_ToJson;
     /**
      * 返回request函数：type: get/post
      */
-    private _getRequest(reqType, reqData);
+    private _getRequest;
     /**
      * 解析wx返回结果
      */
-    private _parseWxRetBody(resBody, agentid);
+    private _parseWxRetBody;
     /**
      * WxHttPReq
      */
-    private _wxHttpReq(reqType, cmd, queryParam, agentid, reqData, newToken);
+    private _wxHttpReq;
     /**
      * 重试
      */
-    private _reqRetry(retryTimes, reqParams);
+    private _reqRetry;
 }

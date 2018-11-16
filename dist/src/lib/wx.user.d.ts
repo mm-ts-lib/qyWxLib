@@ -1,3 +1,7 @@
+/**
+ * Created by mq on 18-05-30.
+ * 发送wx应用消息
+ */
 import WxHttp from './wx.http';
 export default class WxUser {
     /** ******************************   私有变量    ******************************** * */
