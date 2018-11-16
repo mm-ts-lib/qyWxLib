@@ -117,7 +117,8 @@ class WxHttp {
                 return { errcode: 'invalid oauth_code' }; // 直接返回错误信息
             default:
                 // 改版之后，返回结果中必定存在 errcode errmsg
-                throw new Error(`json.errcode:${_errCode}`);
+                // throw new Error(`json.errcode:${_errCode}`);
+                return { errcode: json.errcode, errmsg: json.errmsg };
         }
     }
     /**
