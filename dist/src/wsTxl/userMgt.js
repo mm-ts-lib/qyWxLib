@@ -134,4 +134,4 @@ class UserMgt {
     }
 }
 exports.default = UserMgt;
-//# sourceMappingURL=UserMgt.js.map
+//# sourceMappingURL=userMgt.js.map

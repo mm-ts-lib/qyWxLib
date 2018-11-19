@@ -78,4 +78,4 @@ class DeptMgt {
     }
 }
 exports.default = DeptMgt;
-//# sourceMappingURL=DeptMgt.js.map
+//# sourceMappingURL=deptMgt.js.map

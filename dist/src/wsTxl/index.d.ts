@@ -1,6 +1,6 @@
 import WxHttp from '../lib/wx.http';
-import UserMgt from './UserMgt';
-import DeptMgt from './DeptMgt';
+import UserMgt from './userMgt';
+import DeptMgt from './deptMgt';
 export default class WxTxl {
     /** ******************************   私有变量    ******************************** * */
     private _wxHttp;
