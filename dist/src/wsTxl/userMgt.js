@@ -26,10 +26,10 @@ class UserMgt {
         return this._wxHttp.wxApiGet('user/get', { access_token: this._wxHttp.getLocalToken(txlDef_1.TXL_AGENT_ID), userid }, txlDef_1.TXL_AGENT_ID);
     }
     /**
-   * 通过id获取用户信息
-   * @param userid
-   * @param agentid
-   */
+     * 通过id获取用户信息
+     * @param userid
+     * @param agentid
+     */
     async getOpenIdByUserId(userid) {
         return this._wxHttp.wxApiPost('user/convert_to_openid', { access_token: this._wxHttp.getLocalToken(txlDef_1.TXL_AGENT_ID) }, { userid }, txlDef_1.TXL_AGENT_ID);
     }
@@ -49,13 +49,19 @@ class UserMgt {
     * enable	否	启用/禁用成员。1表示启用成员，0表示禁用成员
     * extattr	否	自定义字段。自定义字段需要先在WEB管理端“我的企业” — “通讯录管理”添加，否则忽略未知属性的赋值
     * */
-    async userCreate(wxId, userName, userMobile, deptId) {
-        const postData = {
+    async userCreate(wxId, userName, userMobile, userEmail, deptIdArr) {
+        let postData = {
             userid: wxId,
             name: userName,
-            mobile: userMobile,
-            department: [deptId]
+            department: deptIdArr,
         };
+        if (userMobile) {
+            postData = lodash_1.default.assign(postData, { mobile: userMobile });
+        }
+        if (userEmail) {
+            // 增加email、deptIdArr创建用户，changed By MQ 20181202
+            postData = lodash_1.default.assign(postData, { email: userEmail });
+        }
         return this._wxHttp.wxApiPost('user/create', { access_token: this._wxHttp.getLocalToken(txlDef_1.TXL_AGENT_ID) }, postData, txlDef_1.TXL_AGENT_ID);
     }
     /*
@@ -77,7 +83,7 @@ class UserMgt {
     async userUpdate(wxId, userName, deptIdArr) {
         // 修改的内容
         const postData = {
-            userid: wxId
+            userid: wxId,
         };
         if (userName) {
             // 否	成员名称。长度为1~64个字节
@@ -98,7 +104,7 @@ class UserMgt {
     * */
     async userDel(userIdArr) {
         const postData = {
-            useridlist: userIdArr
+            useridlist: userIdArr,
         };
         return this._wxHttp.wxApiPost('user/batchdelete', { access_token: this._wxHttp.getLocalToken(txlDef_1.TXL_AGENT_ID) }, postData, txlDef_1.TXL_AGENT_ID);
     }
@@ -114,7 +120,7 @@ class UserMgt {
         return this._wxHttp.wxApiGet('user/simplelist', {
             access_token: this._wxHttp.getLocalToken(txlDef_1.TXL_AGENT_ID),
             department_id: deptId,
-            fetch_child: _fetchChild // 0,不取子部门
+            fetch_child: _fetchChild,
         }, txlDef_1.TXL_AGENT_ID);
     }
     /*
@@ -129,7 +135,7 @@ class UserMgt {
         return this._wxHttp.wxApiGet('user/list', {
             access_token: this._wxHttp.getLocalToken(txlDef_1.TXL_AGENT_ID),
             department_id: deptId,
-            fetch_child: _fetchChild // 0,不取子部门
+            fetch_child: _fetchChild,
         }, txlDef_1.TXL_AGENT_ID);
     }
 }

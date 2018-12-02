@@ -28,14 +28,14 @@ export default class UserMgt {
     return this._wxHttp.wxApiGet(
       'user/get',
       { access_token: this._wxHttp.getLocalToken(TXL_AGENT_ID), userid },
-      TXL_AGENT_ID
+      TXL_AGENT_ID,
     );
   }
   /**
- * 通过id获取用户信息
- * @param userid
- * @param agentid
- */
+   * 通过id获取用户信息
+   * @param userid
+   * @param agentid
+   */
   public async getOpenIdByUserId(userid: string): Promise<IWX_USER_INFO> {
     return this._wxHttp.wxApiPost(
       'user/convert_to_openid',
@@ -63,21 +63,28 @@ export default class UserMgt {
   public async userCreate(
     wxId: string,
     userName: string,
-    userMobile: string,
-    deptId: number
+    userMobile: string | null,
+    userEmail: string | null,
+    deptIdArr: Array<number>,
   ): Promise<{ errcode: number }> {
-    const postData = {
+    let postData = {
       userid: wxId,
       name: userName,
-      mobile: userMobile,
-      department: [deptId]
+      department: deptIdArr,
     };
+    if (userMobile) {
+      postData = _.assign(postData, { mobile: userMobile });
+    }
+    if (userEmail) {
+      // 增加email、deptIdArr创建用户，changed By MQ 20181202
+      postData = _.assign(postData, { email: userEmail });
+    }
 
     return this._wxHttp.wxApiPost(
       'user/create',
       { access_token: this._wxHttp.getLocalToken(TXL_AGENT_ID) },
       postData,
-      TXL_AGENT_ID
+      TXL_AGENT_ID,
     );
   }
   /*
@@ -99,11 +106,11 @@ export default class UserMgt {
   public async userUpdate(
     wxId: string,
     userName: string,
-    deptIdArr: Array<number>
+    deptIdArr: Array<number>,
   ): Promise<{ errcode: number }> {
     // 修改的内容
     const postData = {
-      userid: wxId
+      userid: wxId,
     };
     if (userName) {
       // 否	成员名称。长度为1~64个字节
@@ -121,7 +128,7 @@ export default class UserMgt {
       'user/update',
       { access_token: this._wxHttp.getLocalToken(TXL_AGENT_ID) },
       postData,
-      TXL_AGENT_ID
+      TXL_AGENT_ID,
     );
   }
   /*
@@ -130,26 +137,29 @@ export default class UserMgt {
   * */
   public async userDel(userIdArr: Array<string>): Promise<{ errcode: number }> {
     const postData = {
-      useridlist: userIdArr
+      useridlist: userIdArr,
     };
 
     return this._wxHttp.wxApiPost(
       'user/batchdelete',
       { access_token: this._wxHttp.getLocalToken(TXL_AGENT_ID) },
       postData,
-      TXL_AGENT_ID
+      TXL_AGENT_ID,
     );
   }
   /*
   * 获取部门成员列表(简单信息)
   * deptId: 部门Id
   * */
-  public async userSimpleList(deptId: number, fetchChild?: 0 | 1): Promise<{
+  public async userSimpleList(
+    deptId: number,
+    fetchChild?: 0 | 1,
+  ): Promise<{
     userlist: Array<{
-      userid: string,
-      name: string,
-      department: Array<number>
-    }>
+      userid: string;
+      name: string;
+      department: Array<number>;
+    }>;
   }> {
     let _fetchChild = 0;
     if (fetchChild) {
@@ -160,16 +170,19 @@ export default class UserMgt {
       {
         access_token: this._wxHttp.getLocalToken(TXL_AGENT_ID),
         department_id: deptId,
-        fetch_child: _fetchChild // 0,不取子部门
+        fetch_child: _fetchChild, // 0,不取子部门
       },
-      TXL_AGENT_ID
+      TXL_AGENT_ID,
     );
   }
   /*
   * 获取部门成员列表(详情)
   * deptId: 部门Id
   * */
-  public async userList(deptId: number, fetchChild?: 0 | 1): Promise<{ userlist: Array<IWX_USER_INFO> }> {
+  public async userList(
+    deptId: number,
+    fetchChild?: 0 | 1,
+  ): Promise<{ userlist: Array<IWX_USER_INFO> }> {
     let _fetchChild = 0;
     if (fetchChild) {
       _fetchChild = 1;
@@ -180,9 +193,9 @@ export default class UserMgt {
       {
         access_token: this._wxHttp.getLocalToken(TXL_AGENT_ID),
         department_id: deptId,
-        fetch_child: _fetchChild // 0,不取子部门
+        fetch_child: _fetchChild, // 0,不取子部门
       },
-      TXL_AGENT_ID
+      TXL_AGENT_ID,
     );
   }
   /** ******************************   获取部门成员    ******************************** * */

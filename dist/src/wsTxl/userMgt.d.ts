@@ -16,12 +16,12 @@ export default class UserMgt {
      */
     getUserInfoById(userid: string): Promise<IWX_USER_INFO>;
     /**
-   * 通过id获取用户信息
-   * @param userid
-   * @param agentid
-   */
+     * 通过id获取用户信息
+     * @param userid
+     * @param agentid
+     */
     getOpenIdByUserId(userid: string): Promise<IWX_USER_INFO>;
-    userCreate(wxId: string, userName: string, userMobile: string, deptId: number): Promise<{
+    userCreate(wxId: string, userName: string, userMobile: string | null, userEmail: string | null, deptIdArr: Array<number>): Promise<{
         errcode: number;
     }>;
     userUpdate(wxId: string, userName: string, deptIdArr: Array<number>): Promise<{

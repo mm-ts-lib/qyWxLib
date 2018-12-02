@@ -13,3 +13,4 @@ yarn.lock
 resources
 .mod
 tokens.json5
+dist/src/conf/tokens.json5
