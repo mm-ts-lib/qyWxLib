@@ -37,7 +37,7 @@ class WxHttp {
             cmd,
             queryParam,
             agentid,
-            reqData: {}
+            reqData: {},
         });
     }
     /**
@@ -53,15 +53,15 @@ class WxHttp {
         if (lodash_1.default.isEmpty(postType) || postType === 'json') {
             _reqData = Object.assign(_reqData, {
                 headers: {
-                    'Content-type': 'application/json'
+                    'Content-type': 'application/json',
                 },
-                json: postData
+                json: postData,
             });
         }
         else {
             // postType用来指定调用xml请求时
             _reqData = Object.assign(_reqData, {
-                formData: postData
+                formData: postData,
             });
         }
         return this._reqRetry(3, {
@@ -69,7 +69,7 @@ class WxHttp {
             cmd,
             queryParam,
             agentid,
-            reqData: _reqData
+            reqData: _reqData,
         });
     }
     /** ******************************   私有函数    ******************************** * */
@@ -143,6 +143,7 @@ class WxHttp {
      */
     async _reqRetry(retryTimes, reqParams) {
         const _attemptFn = async (newToken) => {
+            // _d('-----------------------:_attemptFn', retryTimes, newToken);
             if (retryTimes <= 0) {
                 throw new Error('Retry to Update AccessToken 3 times');
             }
@@ -153,7 +154,7 @@ class WxHttp {
                     newToken = lodash_1.default.get(_postRet, 'newToken');
                     _d('+++++++++++++++++wxApiPost retry:', retryTimes);
                     retryTimes -= 1;
-                    _attemptFn(newToken); // 重试
+                    return await _attemptFn(newToken); // 重试
                 }
                 else {
                     return _postRet;

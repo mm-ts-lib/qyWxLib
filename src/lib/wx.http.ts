@@ -31,17 +31,13 @@ export default class WxHttp {
    * queryParam：请求url上所带参数,{access_token:self.accessToken} => ?access_token=xxx
    * callback：回调函数
    */
-  public async wxApiGet(
-    cmd: string,
-    queryParam: object,
-    agentid: string
-  ): Promise<any> {
+  public async wxApiGet(cmd: string, queryParam: object, agentid: string): Promise<any> {
     return this._reqRetry(3, {
       reqType: 'GET',
       cmd,
       queryParam,
       agentid,
-      reqData: {}
+      reqData: {},
     });
   }
   /**
@@ -56,21 +52,21 @@ export default class WxHttp {
     queryParam: object,
     postData: object,
     agentid: string,
-    postType?: 'json' | 'formdata'
+    postType?: 'json' | 'formdata',
   ): Promise<any> {
     // 组装post请求数据
     let _reqData = { url: '' };
     if (_.isEmpty(postType) || postType === 'json') {
       _reqData = Object.assign(_reqData, {
         headers: {
-          'Content-type': 'application/json'
+          'Content-type': 'application/json',
         },
-        json: postData
+        json: postData,
       });
     } else {
       // postType用来指定调用xml请求时
       _reqData = Object.assign(_reqData, {
-        formData: postData
+        formData: postData,
       });
     }
 
@@ -79,7 +75,7 @@ export default class WxHttp {
       cmd,
       queryParam,
       agentid,
-      reqData: _reqData
+      reqData: _reqData,
     });
   }
   /** ******************************   私有函数    ******************************** * */
@@ -141,15 +137,13 @@ export default class WxHttp {
     queryParam: object,
     agentid: string,
     reqData: object,
-    newToken: string
+    newToken: string,
   ) {
     // 成功更新accessToken //注：access_token在queryParam中
     if (!_.isEmpty(newToken)) {
       _.set(queryParam, 'access_token', newToken);
     }
-    let _newUrl = `https://qyapi.weixin.qq.com/cgi-bin/${cmd}?${querystring.stringify(
-      queryParam
-    )}`;
+    let _newUrl = `https://qyapi.weixin.qq.com/cgi-bin/${cmd}?${querystring.stringify(queryParam)}`;
     _.set(reqData, 'url', _newUrl);
     // 当access_token无效时，需要从新赋值，故需要querystring.stringify
     // const _tmpReqData = _.clone(reqData);
@@ -169,9 +163,10 @@ export default class WxHttp {
       agentid: string;
       reqType: 'GET' | 'POST';
       reqData: object;
-    }
+    },
   ) {
-    const _attemptFn = async (newToken: string) => {
+    const _attemptFn = async (newToken: string): Promise<any> => {
+      // _d('-----------------------:_attemptFn', retryTimes, newToken);
       if (retryTimes <= 0) {
         throw new Error('Retry to Update AccessToken 3 times');
       } else {
@@ -181,7 +176,7 @@ export default class WxHttp {
           reqParams.queryParam,
           reqParams.agentid,
           reqParams.reqData,
-          newToken
+          newToken,
         );
 
         const _errcode = _.get(_postRet, 'errcode');
@@ -189,7 +184,7 @@ export default class WxHttp {
           newToken = _.get(_postRet, 'newToken');
           _d('+++++++++++++++++wxApiPost retry:', retryTimes);
           retryTimes -= 1;
-          _attemptFn(newToken); // 重试
+          return await _attemptFn(newToken); // 重试
         } else {
           return _postRet;
         }
