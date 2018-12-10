@@ -71,6 +71,7 @@ export default class UserMgt {
       userid: wxId,
       name: userName,
       department: deptIdArr,
+      to_invite: false, // 否	是否邀请该成员使用企业微信（将通过微信服务通知或短信或邮件下发邀请，每天自动下发一次，最多持续3个工作日），默认值为true。
     };
     if (userMobile) {
       postData = _.assign(postData, { mobile: userMobile });

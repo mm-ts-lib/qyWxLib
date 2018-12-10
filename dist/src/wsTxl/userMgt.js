@@ -54,6 +54,7 @@ class UserMgt {
             userid: wxId,
             name: userName,
             department: deptIdArr,
+            to_invite: false,
         };
         if (userMobile) {
             postData = lodash_1.default.assign(postData, { mobile: userMobile });
