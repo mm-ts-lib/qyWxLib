@@ -87,9 +87,14 @@ export default class WxHttp {
   private async _wxResBody_ToJson(wxRet: object | string) {
     if (_.isString(wxRet)) {
       // 防止json解析出错
-      return JSON.parse(wxRet);
+      try {
+        return JSON.parse(wxRet);
+      } catch (e) {
+        _d('-----------_wxResBody_ToJson Err', e, wxRet);
+      }
+    } else {
+      return wxRet;
     }
-    return wxRet;
   }
   /**
    * 返回request函数：type: get/post

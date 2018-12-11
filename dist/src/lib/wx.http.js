@@ -80,9 +80,16 @@ class WxHttp {
     async _wxResBody_ToJson(wxRet) {
         if (lodash_1.default.isString(wxRet)) {
             // 防止json解析出错
-            return JSON.parse(wxRet);
+            try {
+                return JSON.parse(wxRet);
+            }
+            catch (e) {
+                _d('-----------_wxResBody_ToJson Err', e, wxRet);
+            }
         }
-        return wxRet;
+        else {
+            return wxRet;
+        }
     }
     /**
      * 返回request函数：type: get/post
