@@ -98,7 +98,7 @@ class WxHttp {
         if (reqType === 'POST') {
             return request_promise_1.default.post(reqData);
         }
-        return request_promise_1.default.get(reqData.url, { timeout: 10 * 1000 });
+        return request_promise_1.default.get(reqData.url, { timeout: 60 * 1000 }); // docker中取用户信息时，超时
     }
     /**
      * 解析wx返回结果
@@ -141,9 +141,7 @@ class WxHttp {
         // 当access_token无效时，需要从新赋值，故需要querystring.stringify
         // const _tmpReqData = _.clone(reqData);
         try {
-            _d('--------------111 reqType', reqType);
             const _resBody = await this._getRequest(reqType, reqData);
-            _d('--------------222 _resBody');
             const _json = await this._parseWxRetBody(_resBody, agentid);
             return _json;
             // 获取accessToken错误 + JSON.parse错误
