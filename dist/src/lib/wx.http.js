@@ -140,7 +140,9 @@ class WxHttp {
         lodash_1.default.set(reqData, 'url', _newUrl);
         // 当access_token无效时，需要从新赋值，故需要querystring.stringify
         // const _tmpReqData = _.clone(reqData);
+        _d('--------------111 reqType, reqData', reqType, reqData);
         const _resBody = await this._getRequest(reqType, reqData);
+        _d('--------------222 _resBody', _resBody);
         const _json = await this._parseWxRetBody(_resBody, agentid);
         return _json;
         // 获取accessToken错误 + JSON.parse错误
