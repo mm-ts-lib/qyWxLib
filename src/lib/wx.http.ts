@@ -103,7 +103,7 @@ export default class WxHttp {
     if (reqType === 'POST') {
       return request.post(reqData);
     }
-    return request.get(reqData);
+    return request.get(reqData.url, { timeout: 2000 });
   }
   /**
    * 解析wx返回结果
@@ -152,9 +152,9 @@ export default class WxHttp {
     _.set(reqData, 'url', _newUrl);
     // 当access_token无效时，需要从新赋值，故需要querystring.stringify
     // const _tmpReqData = _.clone(reqData);
-    _d('--------------111 reqType, reqData', reqType, reqData)
+    _d('--------------111 reqType, reqData', reqType, reqData);
     const _resBody = await this._getRequest(reqType, reqData);
-    _d('--------------222 _resBody', _resBody)
+    _d('--------------222 _resBody');
     const _json = await this._parseWxRetBody(_resBody, agentid);
     return _json;
     // 获取accessToken错误 + JSON.parse错误
