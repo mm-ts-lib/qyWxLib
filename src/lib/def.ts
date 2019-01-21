@@ -30,7 +30,13 @@ export interface IWX_CFG {
 //   safe: number; // 0
 // }
 
-
+// 图文消息
+export interface IWX_ARTICLE {
+  title: string;
+  description: string;
+  url: string;
+  picurl: string;
+}
 // wx
 export interface IWX_MSG_RES {
   errcode: number; //0,

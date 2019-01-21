@@ -16,6 +16,12 @@ export interface IWX_CFG {
         };
     };
 }
+export interface IWX_ARTICLE {
+    title: string;
+    description: string;
+    url: string;
+    picurl: string;
+}
 export interface IWX_MSG_RES {
     errcode: number;
     errmsg: string;

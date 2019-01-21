@@ -20,7 +20,7 @@ class WxMsg {
      */
     async sendText(agentid, content, touser, toparty, totag) {
         return this._wxHttp.wxApiPost('message/send', {
-            access_token: this._wxHttp.getLocalToken(agentid)
+            access_token: this._wxHttp.getLocalToken(agentid),
         }, {
             touser,
             toparty,
@@ -28,7 +28,7 @@ class WxMsg {
             msgtype: 'text',
             agentid,
             text: { content },
-            safe: 0
+            safe: 0,
         }, agentid);
     }
     /**
@@ -36,7 +36,7 @@ class WxMsg {
      */
     async sendImage(agentid, media_id, touser, toparty, totag) {
         return this._wxHttp.wxApiPost('message/send', {
-            access_token: this._wxHttp.getLocalToken(agentid)
+            access_token: this._wxHttp.getLocalToken(agentid),
         }, {
             touser,
             toparty,
@@ -44,7 +44,27 @@ class WxMsg {
             msgtype: 'image',
             agentid,
             image: { media_id },
-            safe: 0
+            safe: 0,
+        }, agentid);
+    }
+    /**
+     * 发送图文消息
+     */
+    async sendArticles(agentid, articles, touser, toparty, totag) {
+        if (articles.length > 8) {
+            throw new Error('一个图文消息支持1到8条图文');
+        }
+        return this._wxHttp.wxApiPost('message/send', {
+            access_token: this._wxHttp.getLocalToken(agentid),
+        }, {
+            touser,
+            toparty,
+            totag,
+            msgtype: 'news',
+            agentid,
+            news: {
+                articles,
+            },
         }, agentid);
     }
 }

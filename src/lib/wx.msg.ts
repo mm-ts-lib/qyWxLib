@@ -7,7 +7,7 @@ import debug from 'debug';
 const _d = debug('@tslib/qyWxLib:' + path.basename(__filename));
 
 import WxHttp from './wx.http';
-import { IWX_MSG_RES } from './def';
+import { IWX_MSG_RES, IWX_ARTICLE } from './def';
 
 export default class WxMsg {
   /** ******************************   私有变量    ******************************** * */
@@ -25,12 +25,12 @@ export default class WxMsg {
     content: string,
     touser?: string,
     toparty?: string,
-    totag?: string
+    totag?: string,
   ): Promise<IWX_MSG_RES> {
     return this._wxHttp.wxApiPost(
       'message/send',
       {
-        access_token: this._wxHttp.getLocalToken(agentid)
+        access_token: this._wxHttp.getLocalToken(agentid),
       },
       {
         touser, // _userIdStr,
@@ -39,9 +39,9 @@ export default class WxMsg {
         msgtype: 'text',
         agentid,
         text: { content },
-        safe: 0
+        safe: 0,
       },
-      agentid
+      agentid,
     );
   }
   /**
@@ -52,12 +52,12 @@ export default class WxMsg {
     media_id: string,
     touser?: string,
     toparty?: string,
-    totag?: string
+    totag?: string,
   ): Promise<IWX_MSG_RES> {
     return this._wxHttp.wxApiPost(
       'message/send',
       {
-        access_token: this._wxHttp.getLocalToken(agentid)
+        access_token: this._wxHttp.getLocalToken(agentid),
       },
       {
         touser, // _userIdStr,
@@ -66,13 +66,41 @@ export default class WxMsg {
         msgtype: 'image',
         agentid,
         image: { media_id },
-        safe: 0
+        safe: 0,
       },
-      agentid
+      agentid,
     );
   }
   /**
    * 发送图文消息
    */
+  public async sendArticles(
+    agentid: string,
+    articles: Array<IWX_ARTICLE>,
+    touser?: string,
+    toparty?: string,
+    totag?: string,
+  ): Promise<IWX_MSG_RES> {
+    if (articles.length > 8) {
+      throw new Error('一个图文消息支持1到8条图文');
+    }
+    return this._wxHttp.wxApiPost(
+      'message/send',
+      {
+        access_token: this._wxHttp.getLocalToken(agentid),
+      },
+      {
+        touser, // _userIdStr,
+        toparty,
+        totag,
+        msgtype: 'news',
+        agentid,
+        news: {
+          articles,
+        },
+      },
+      agentid,
+    );
+  }
   /** ******************************   私有函数    ******************************** * */
 }

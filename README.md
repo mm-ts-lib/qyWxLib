@@ -28,6 +28,7 @@ await wx.getWxUser().userFromCode();
 
 * sendText: 发送文本消息
 * sendImage: 发送图片消息
+* sendArticles: 发送图文消息
 
 ### 3. wxUser 用户管理
 

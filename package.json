@@ -1,6 +1,6 @@
 {
   "name": "@tslib/qy-wx-lib",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "TypeScript weixin",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.js",
